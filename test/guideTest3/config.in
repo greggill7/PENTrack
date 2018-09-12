@@ -1,7 +1,7 @@
 [GLOBAL]
-simtype 4  # Particle simulation  = 1
-simcount 1 # Number neutrons
-simtime 7.5   # seconds
+simtype 1  # Particle simulation  = 1
+simcount 3 # Number neutrons
+simtime 5   # seconds
 
 secondaries 0
 
@@ -46,7 +46,7 @@ polarization 1		# 1: low-field-seeker (spin up), -1: high-field-seeker, 0: rando
 
 [FIELDS]
 # COMSOLfield 	filename           BFieldScale	BoundaryWidth
-1 COMSOL        Lsol100cmIc5A.txt   1            0
+1 COMSOL        Isol0A.txt         1            0
 
 [PARTICLES]
 tau 1

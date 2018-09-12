@@ -721,7 +721,8 @@ void TParticle::Print(const value_type x, const state_type &y, const state_type 
 					"tend xend yend zend "
 					"vxend vyend vzend polend "
 					"Sxend Syend Szend "
-					"Hend Eend Bend Uend solidend "
+					"Hend Eend Bend "
+					"BxEnd ByEnd BzEnd Uend solidend "
 					"stopID Nspinflip spinflipprob "
 					"Nhit Nstep trajlength Hmax wL\n";
 		file << std::setprecision(std::numeric_limits<double>::digits10); // need maximum precision for wL and delwL
@@ -759,7 +760,8 @@ void TParticle::Print(const value_type x, const state_type &y, const state_type 
 	file	<< x << " " << y[0] << " " << y[1] << " " << y[2] << " "
 			<< y[3] << " " << y[4] << " " << y[5] << " " << y[7] << " "
 			<< spin[0] << " " << spin[1] << " " << spin[2] << " " << H << " " << E << " "
-			<< sqrt(B[0]*B[0] + B[1]*B[1] + B[2]*B[2]) << " " << V << " " << sld.ID << " "
+			<< sqrt(B[0]*B[0] + B[1]*B[1] + B[2]*B[2]) << " " << B[0] <<" " << B[1] << " "
+			<< B[2] << " " << V << " " << sld.ID << " "
 			<< ID << " " << Nspinflip << " " << 1 - noflipprob << " "
 			<< Nhit << " " << Nstep << " " << y[8] << " " << Hmax << " " << wL << '\n';
 }

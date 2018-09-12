@@ -162,6 +162,7 @@ The endlog keeps track of the starting and end parameters of the simulated parti
 - Hend: final total energy of particle [eV]
 - Eend: final kinetic energy of the particle [eV]
 - Bend: magnetic field at stopping point [T]
+- BxEnd, ByEnd, BzEnd: magnetic field at ending point [T]
 - Uend: electric potential at stopping point [V]
 - solidend: number of geometry part the particle stopped in, see GEOMETRY section in configuration file
 - stopID: code which identifies why the particle was stopped (defined in globals.h)
