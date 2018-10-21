@@ -239,6 +239,30 @@ If the spinlog parameter is enabled in the configuration file and the particle s
 - Wx, Wy, Wz: components of precession-axis vector [1/s]
 - Bx, By, Bz: field experienced by the neutron at time t [Tesla]
 
+Plotting Output
+---------------
+There are a couple quick scripts located in PENTrack/out to help with quick
+visualization of end results from output files
+
+### plotEnd.py
+
+Makes a histogram of neutron end polarization from a neutronend.out file
+Use [--help] for optional arguments
+
+### plotField.py
+
+Plots the vector field from BFCut.out. Use [--help] for optional arguments
+
+### plotSnap.py
+
+Makes and saves multiple images quantifying polarization over time of a population
+of neutrons in neutronsnapshot.out files. Use [--help] for optional arguments
+
+### plotSpin.py
+
+Plots a variety of things using neutronspin.out files. Use [--help] for
+optional arguments.
+
 Helper Scripts
 --------------
 

@@ -1,6 +1,6 @@
 [GLOBAL]
 # simtype: 1 => particles, 3 => Bfield, 4 => cut through BField, 7 => print geometry
-simtype 4    # Choose either 1 or 4 for this test
+simtype 1    # Choose either 1 or 4 for this test
 simcount 1
 simtime 1
 

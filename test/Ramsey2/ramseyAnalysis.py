@@ -23,8 +23,8 @@ def main():
     ByEnd = []
     BzEnd = []
 
-    
-    print("Reading joblist.out")    
+
+    print("Reading joblist.out")
 
     try:
         with open ('joblist.out',"r") as f:
@@ -38,20 +38,20 @@ def main():
     except IOError:
         print("Error reading joblist.out")
         return
-    
+
     print("Looking for files " + filenames[0] + " through " + filenames[-1])
     print("Start freq of ramsey fringe: ", wFreq[0])
-    print("End freq of ramsey fringe: ", wFreq[-1]) 
+    print("End freq of ramsey fringe: ", wFreq[-1])
 
     missedFiles = 0
     for endlog, w in zip(filenames, wFreq):
         try:
             with open (endlog,"r") as f:
-                lines = f.readlines()[1:] # Skip first line in endlog 
+                lines = f.readlines()[1:] # Skip first line in endlog
                 for line in lines:
                     text = line.split()
                     if len(text) < 34:  # Some jobs aborted
-                        break                    
+                        break
                     particle.append(int( text[1]) )
                     SxStart.append(float( text[10]) )
                     SyStart.append(float( text[11]) )
@@ -95,7 +95,10 @@ def main():
     plt.ylabel('Sz')
 
     plt.savefig("ramseyFringe.png")
-    print("ramseyFringe.png created!")
+    print("ramseyFringe.png created")
+
+    np.savetxt('ramseyAnalysis.out', (wVal,szAv), delimiter=",")
+    print("ramseyAnalysis.out created")
     plt.show()
     return
 

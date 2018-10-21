@@ -576,7 +576,7 @@ bool TParticle::DoHit(const value_type x1, const state_type &y1, value_type &x2,
       return true;
     }
   }
-  
+
   solid leaving = GetCurrentsolid(); // particle can only leave highest-priority solid
   solid entering = geom.defaultsolid;
   for (auto sld: newsolids){
@@ -609,16 +609,16 @@ bool TParticle::DoHit(const value_type x1, const state_type &y1, value_type &x2,
         throw std::runtime_error("OnHit routine returned inconsistent position. That should not happen!");
       }
     }
- 
+
     if (hitlog)
       PrintHit(x1, y1, y2, coll->first.normal, leaving, entering); // print collision to file if requested
     Nhit++;
   }
- 
+
   if (traversed){
     currentsolids = newsolids; // if surface was traversed (even if it was  physically ignored) replace current solids with list of new solids
   }
- 
+
   if (trajectoryaltered || ID != ID_UNKNOWN)
     return true;
 
@@ -670,7 +670,7 @@ bool TParticle::CheckHit(const value_type x1, const state_type &y1, value_type &
     ID = ID_HIT_BOUNDARIES;
     return true;
   }
-  
+
   solid currentsolid = GetCurrentsolid();
 
   multimap<TCollision, bool> colls;
@@ -682,7 +682,7 @@ bool TParticle::CheckHit(const value_type x1, const state_type &y1, value_type &
     ID = ID_CGAL_ERROR;
     return true;
   }
-  
+
   if (collfound){	// if there is a collision with a wall
     value_type xc1 = x1, xc2 = x2;
 //    for (auto c: colls)

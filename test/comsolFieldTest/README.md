@@ -1,4 +1,4 @@
-lanlEDM/comsolFieldTest
+comsolFieldTest
 ========================
 
 Reads in a 3D arrow plot from COMSOL containing the magnetic field from a helmholtz coil
@@ -10,7 +10,7 @@ Can be any text file with 6 columns, x y z Bx By Bz
 Units are assumed to be in meters and Tesla, though units can be edited in comsolField3D.h
 
 container.stl is an empty cylinder with OD 1m and height 0.5 meter, centered at (0,0,0).
-It has walls 1cm thick. For simtype = 1 we put a neutron in this field and watch it precess 
+It has walls 1cm thick. For simtype = 1 we put a neutron in this field and watch it precess
 
 
 Run the test with ./RunTest.sh

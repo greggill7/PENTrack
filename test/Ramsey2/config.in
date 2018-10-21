@@ -1,6 +1,6 @@
 [GLOBAL]
 simtype 1
-simcount 1000
+simcount 100
 simtime 188.572
 
 secondaries 0
@@ -61,11 +61,11 @@ lmax 9e99
 endlog 1
 tracklog 0
 hitlog 0
-snapshotlog 0
-spinlog 0
-snapshots 0 10 20 30 40 50
+snapshotlog 1
+spinlog 1
+snapshots 0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180
 trackloginterval 5e-3
-spinloginterval 0.01
+spinloginterval 5e-4
 
 spintimes 0 1000  # Spin tracking between these times
 Bmax 0.1

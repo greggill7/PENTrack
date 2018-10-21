@@ -54,12 +54,12 @@ def main():
         jobCounter += 1
         with open(PBS_TEMPLATE) as infile, open(pbsFileName, 'w') as outfile:
             for line in infile:
-                for src, target in replacements.items():    #use iteritems() for python 2 items() for python 3
+                for src, target in replacements.items():    #use iteritems() for python 2, items() for python 3
                     line = line.replace(src, target)
                 outfile.write(line)
         with open(CONFIG_TEMPLATE) as infile, open(configFileName, 'w') as outfile:
             for line in infile:
-                for src, target in replacements.iteritems():
+                for src, target in replacements.items():    #use iteritems() for python 2, items() for python 3
                     line = line.replace(src, target)
                 outfile.write(line)
         # Submit job via bash
