@@ -66,7 +66,7 @@ tracklog 0
 trackloginterval 5e-3
 hitlog 0
 snapshotlog 0
-snapshots 
+snapshots
 
 spinlog 0
 spinloginterval 5e-7
@@ -83,3 +83,7 @@ tmax 3e-3
 
 [electron]
 tmax 1e-5
+
+[mercury]
+
+[xenon]

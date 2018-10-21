@@ -266,6 +266,11 @@ optional arguments.
 Helper Scripts
 --------------
 
+### Submitting to a TORQUE queueing system
+
+For a single PENTrack job on a single core, modify the parameters on job.pbs
+accordingly (e.g. output folder names, etc), and submit using $ qsub job.pbs
+
 ### Merging output files into ROOT trees
 
 merge_all.c: A [ROOT](http://root.cern.ch) script that writes all out-files (or those, whose filenames match some pattern) into a single ROOT file containing trees for each log- and particle-type.
