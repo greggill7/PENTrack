@@ -1,6 +1,7 @@
+# EDIT THIS FOR RAMSEYFRINGE.PY
 [GLOBAL]
 simtype 1
-simcount 100
+simcount 1000
 simtime 188.572
 
 secondaries 0
@@ -48,7 +49,7 @@ polarization 1		# 1: low-field-seeker, -1: high-field-seeker, 0: random
 1 EDMStaticB0GradZField     0         0          0       0       0       1E-6    0          0         1       -1      1       -1      1       -1      1
 
 #EDMStaticB0GradZField   edmB0xoff edmB0yoff edmB0zoff pol_ang azm_ang edmB0z0 edmdB0z0dz BoundaryWidth xmax    xmin    ymax    ymin    zmax    zmin scale
-2 EDMStaticB0GradZField 0 0 0 90 0 4E-9 0 0 1 -1 1 -1 1 -1 (t<4.286)?sin(183.247*t):(t<184.286)?0:(t<188.572)?sin(183.247*t):0
+2 EDMStaticB0GradZField 0 0 0 90 0 4E-9 0 0 2 -2 2 -2 2 -2 (t<4.286)?sin(PULSE_FREQ*t):(t<184.286)?0:(t<188.572)?sin(PULSE_FREQ*t):0
 
 #EDMStaticEField          MagnitudeAlongX (V/m)    MagnitudeAlongY (V/m)   MagnitudeAlongZ (V/m)        scale
 3 EDMStaticEField                      0                       0                    1E6                  1
@@ -61,11 +62,11 @@ lmax 9e99
 endlog 1
 tracklog 0
 hitlog 0
-snapshotlog 1
-spinlog 1
-snapshots 0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180
+snapshotlog 0
+spinlog 0
+snapshots 0 10 20 30 40 50
 trackloginterval 5e-3
-spinloginterval 5e-4
+spinloginterval 0.01
 
 spintimes 0 1000  # Spin tracking between these times
 Bmax 0.1

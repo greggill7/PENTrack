@@ -20,13 +20,13 @@ GCC 4.7.2 and newer should work. GCC 4.8.2 seems to break the CGAL library on so
 The [Computational Geometry Algorithms Library](http://www.cgal.org/) is used to detect collisions of particle tracks with the experiment geometry defined by triangle meshes using AABB trees.
 Some Linux distributions (e.g. Ubuntu, Debian) include the libcgal-dev package. If yours does not, you can run the bash script `install_cgal.sh`, which will download and compile CGAL for you. If you choose to manually download and compile it yourself, you will have to adjust the search path of cmake by calling cmake with `-DCGAL_DIR=/path/to/CGAL`.
 
-CGAL v4.1 - v4.11 have been tested.
+CGAL v4.1 - v4.12 have been tested.
 
 ### Boost
 
 The [Boost C++ libraries](https://www.boost.org/) are a prerequisite for the CGAL library. Additionally, the simulation uses the [odeint integrator](http://headmyshoulder.github.io/odeint-v2/) included in Boost 1.53.0 and newer. Boost is included in most Linux OSs; should you need to download and compile it manually, you may have to adjust the search path of cmake by calling cmake with `-DBOOST_ROOT=/path/to/boost`.
 
-Boost 1.53.0 - 1.59.0 have been tested.
+Boost 1.53.0 - 1.68.0 have been tested. Boost 1.64.0 is unusable as it contains [a bug](https://svn.boost.org/trac10/ticket/12516) that prevents compiling PENTrack.
 
 ### ExprTk
 
@@ -162,6 +162,7 @@ The endlog keeps track of the starting and end parameters of the simulated parti
 - Hend: final total energy of particle [eV]
 - Eend: final kinetic energy of the particle [eV]
 - Bend: magnetic field at stopping point [T]
+- BxEnd, ByEnd, BzEnd: magnetic field at ending point [T]
 - Uend: electric potential at stopping point [V]
 - solidend: number of geometry part the particle stopped in, see GEOMETRY section in configuration file
 - stopID: code which identifies why the particle was stopped (defined in globals.h)
@@ -238,8 +239,37 @@ If the spinlog parameter is enabled in the configuration file and the particle s
 - Wx, Wy, Wz: components of precession-axis vector [1/s]
 - Bx, By, Bz: field experienced by the neutron at time t [Tesla]
 
+Plotting Output
+---------------
+There are a couple quick scripts located in PENTrack/out to help with quick
+visualization of end results from output files
+
+### plotEnd.py
+
+Makes a histogram of neutron end polarization from a neutronend.out file
+Use [--help] for optional arguments
+
+### plotField.py
+
+Plots the vector field from BFCut.out. Use [--help] for optional arguments
+
+### plotSnap.py
+
+Makes and saves multiple images quantifying polarization over time of a population
+of neutrons in neutronsnapshot.out files. Use [--help] for optional arguments
+
+### plotSpin.py
+
+Plots a variety of things using neutronspin.out files. Use [--help] for
+optional arguments.
+
 Helper Scripts
 --------------
+
+### Submitting to a TORQUE queueing system
+
+For a single PENTrack job on a single core, modify the parameters on job.pbs
+accordingly (e.g. output folder names, etc), and submit using $ qsub job.pbs
 
 ### Merging output files into ROOT trees
 

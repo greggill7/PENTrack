@@ -1,4 +1,6 @@
 #!/bin/sh
+# For compiling when MPFR and BOOST libraries are not automatically found, example cmake command:
+# cmake ../${CGAL_VERSION}/ -DWITH_CGAL_Qt5=OFF -DWITH_CGAL_ImageIO=OFF -DCGAL_HEADER_ONLY=ON -DCMAKE_INSTALL_PREFIX=.. -DMPFR_INCLUDE_DIR=/N/soft/rhel7/mpfr/gnu/3.1.5/include -DMPFR_LIBRARIES=/N/soft/rhel7/mpfr/gnu/3.1.5/lib/libmpfr.so -DBOOST_ROOT=/N/soft/rhel7/boost/gnu/1.64.0
 
 CGAL_VERSION=CGAL-4.11
 
