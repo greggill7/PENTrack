@@ -34,7 +34,6 @@ def main():
     parser.add_argument("-f", "--file", type=str, help = "Filename (default 000000000000neutronspin.out)")
     parser.add_argument("-p", "--proj", action="store_true", help = "Spin projection plots")
     parser.add_argument("-s", "--spin", action="store_true", help = "sx, sy, sz plots")
-    # parser.add_argument("-t2", "--t2", action="store_true", help = "Estimates T2 using Sx")
     parser.add_argument("-n", "--neutron", type=int, help = "Limit plots to one neutron in file")
     parser.add_argument("-a", "--adiab", action="store_true", help = "Finds adiabaticity (needs -n enabled)")
     parser.add_argument("-four", "--fourier", action="store_true", help = "Prints fourier transform of spin components (needs -n enabled)")
@@ -81,16 +80,6 @@ def main():
         # (dB/dt)/(y B^2)
         if (args.neutron != None) and (i != 0):
             adiab.append(( np.abs(bNorm[i]-bNorm[i-1])/(t[i]-t[i-1]))/ (yNeutron * bNorm[i]**2))
-        # # Calculate T2 using Sx spread over time
-        # # First save interesting values of Sx
-        # if (args.t2 and (i != 0)):
-        #     tInd = closestInd(t[i-1], t[i], t2Times)
-        #     if tInd is None:
-        #         continue
-        #     else:
-        #         # Approximate sx at precise time t2
-        #         sxT2.append( sx[i] - (t[i] - t2Times[tInd]) * (sx[i]-sx[i-1]) / (t[i]-t[i-1]) )
-        #         t2Temp.append(t2Times[tInd])
 
     # PLOT STUFF #
     if (args.proj):
@@ -208,26 +197,6 @@ def main():
             ax14.set_ylabel('Sy')
             ax14.set_zlabel('Sz')
             ax14.view_init(30,220)
-
-    # if (args.t2):
-    #     # fig15 = plt.figure(15)
-    #     # plt.plot(t, sx)
-    #     # plt.grid(True)
-    #     # plt.title('Sx(t)')
-    #     # plt.xlabel('t [s]')
-    #     # plt.ylabel('P(x)')
-    #     # plt.plot(t2Temp, sxT2, '.', color="C1")
-    #
-    #     sxT2 = np.reshape(sxT2, (len(t2Times), -1), order="F" )
-    #     for sxSet in sxT2:
-    #         sxDev.append( np.std(sxSet) )
-    #
-    #     fig16 = plt.figure(16)
-    #     plt.plot(t2Times, sxDev, ".")
-    #     plt.grid(True)
-    #     plt.title('$\sigma$ (Sx comp) over time')
-    #     plt.xlabel('t [s]')
-    #     plt.ylabel('$\sigma$')
 
     plt.show()
 

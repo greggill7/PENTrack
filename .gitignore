@@ -15,6 +15,8 @@ install_manifest.txt
 # ignore binaries
 PENTrack
 
+test/storageTest/
+
 # ignore output files
 *.out
 *.root
@@ -30,3 +32,6 @@ cgal/
 *.creator.user
 *.files
 *.includes
+
+# Python
+__pycache__/
