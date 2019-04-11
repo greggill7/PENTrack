@@ -12,7 +12,7 @@ def main():
     parser = argparse.ArgumentParser(description='Plots neutronend.out histograms for multiple runs')
     parser.add_argument("-r", "--runs", type=int, nargs=2, required=True, help="Start and end values of PENTrack runs")
     parser.add_argument("-q", "--query", type=str, help = "User defined query to limit neutrons in histogram", default="all")
-    parser.add_argument("-f", "--folder", type=str, help = "Folder location (default .)", default="./")
+    parser.add_argument("-f", "--folder", type=str, help = "Folder location (default ./)", default="./")
     parser.add_argument("-s", "--save", action="store_true", help = "Saves histogram to endPol.png")
     args = parser.parse_args()
 
@@ -22,10 +22,16 @@ def main():
     endPolCount = 0
     simTotal = 0
     missedRuns = []
+
+    if (args.folder[-1] != "/"):
+        folder = args.folder + "/"
+    else:
+        folder = args.folder
+
     for i in runNum:
-        runName = args.folder + str(i).zfill(12) + "neutronend.out"
+        runName = folder + str(i).zfill(12) + "neutronend.out"
         try:
-            df = pd.read_csv(runName, delim_whitespace=True, usecols=[1,10,11,12,19,20,21,26,27,28,32,33,34])
+            df = pd.read_csv(runName, delim_whitespace=True, usecols=[1,10,11,12,18,19,20,21,26,27,28,32,33,34])
         except:
             missedRuns.append(i)
             continue
@@ -33,9 +39,14 @@ def main():
         simTotal += len(df.index)
         if args.query != "all":
             # Queries may involve any property listed below:
-            # ['particle', 'Sxstart', 'Systart', 'Szstart', 'xend', 'yend', 'zend',
+            # ['particle', 'Sxstart', 'Systart', 'Szstart','tend', 'xend', 'yend', 'zend',
             # 'Sxend', 'Syend', 'Szend', 'BxEnd', 'ByEnd', 'BzEnd']
             df = df.query(args.query)
+
+        # print(df)
+        # df.hist(column='BxEnd', bins=200)
+        # df.hist(column='ByEnd', bins=200)
+        # df.hist(column='BzEnd', bins=200)
 
         endPol = (df['Sxend']*df['BxEnd'] + df['Syend']*df['ByEnd'] + df['Szend']*df['BzEnd'])/np.sqrt(df['BxEnd']**2 + df['ByEnd']**2 + df['BzEnd']**2)
         endPolCount += len(endPol.index)
@@ -43,6 +54,10 @@ def main():
         histTemp, binEdges = np.histogram(endPol,range = [-1,1], bins = nbins)
         histTotal += histTemp
 
+    if len(missedRuns) == len(runNum):
+        print("Seems like no files were read correctly :(")
+        return
+        
     print("Error reading run numbers-- ", missedRuns)
     print("Average polarization: ", endPolTotal/endPolCount)
     print("Number of neutrons in histogram: ", int(np.sum(histTotal)))

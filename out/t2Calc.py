@@ -2,58 +2,66 @@
 # Calcs t2 from neutronspin.out files, examines Sx component falling
 # out of sync
 
-T2RANGE = [5, 180]      # Time range [sec] to examine T2
-T2RANGE_STEP = 1
+#from __future__ import print_function
 
 def main():
     import numpy as np
     import matplotlib.pyplot as plt
     import argparse
-    from scipy.interpolate import interp1d
+    import pandas as pd
     from scipy.interpolate import InterpolatedUnivariateSpline
+    # import sys
 
-    parser = argparse.ArgumentParser(description="Plot everything related to spin.out files")
-    parser.add_argument("-f", "--file", type=str, help = "Filename (default 000000000000neutronspin.out)", default='000000000000neutronspin.out')
+    parser = argparse.ArgumentParser(description="Calculates T2 from multiple neutronspin.out files")
+    parser.add_argument("-r", "--runs", type=int, nargs=2, required=True, help="Start and end values of PENTrack runs")
+    parser.add_argument("-f", "--folder", type=str, help = "Folder location (default ./)", default="./")
+    parser.add_argument("-t", "--time", type=float, nargs=2, required=True, help="Start and end values of T2 precession time")
+    parser.add_argument("-s", "--step", type=float, nargs=1, required=True, help="Step size in [range] with which to calculate T2")
     args = parser.parse_args()
 
-    filename = args.file
 
-    # Read in file
-    try:
-        print("Reading file...")
-        num, t, sx = np.loadtxt(filename, skiprows=1, usecols=(1, 2, 6), unpack=True)
-    except OSError:
-        print("Could not find ", filename)
-        return
+    if (args.folder[-1] != "/"):
+        folder = args.folder + "/"
+    else:
+        folder = args.folder
 
-    totalN = int(num[-1])
-    print("Neutrons in file: ",totalN)
-
-    if totalN < 2:
-        print("Needs more than 1 neutron in  file")
-        return
-
-    # Rearrange sx and t into 2D so that it goes
-    # [[sx1_neutron1, sx2_neutron1... ], [sx1_neutron2, sx2_neutron2...]]
-    splitIndices = np.searchsorted(num, np.arange(2, totalN + 1))
-    sx = np.split(sx, splitIndices)
-    t = np.split(t, splitIndices)
-
-    print("Interperolating spin tracking...")
-    # Spline interpolate each set of sx for neutrons
-    # Obtain a set of sx values for each value in T2RANGE
-    t2Times = np.arange(T2RANGE[0],T2RANGE[1],T2RANGE_STEP)
+    print("Reading files and processing...")
+    runNum = np.arange(args.runs[0],args.runs[1]+1)
+    t2Times = np.arange(args.time[0],args.time[1] + args.step[0],args.step[0])
+    simTotal = 0
+    progress = 0
+    missedRuns = []
     sxT2 = []
-    for t_i, sx_i in zip(t, sx):
-        func = InterpolatedUnivariateSpline(t_i, sx_i)
-        sxT2.append( func(t2Times) )
 
-    print("Calculating T2")
 
-    # Find std deviation for sx set
+    for i in runNum:
+        runName = folder + str(i).zfill(12) + "neutronspin.out"
+        print(int(progress/float(len(runNum))*100),"%...", end="", flush=True) # Flush doesn't work in python 2
+        progress += 1
+        # sys.stdout.flush()
+        try:
+            df = pd.read_csv(runName, delim_whitespace=True, usecols=[1, 2, 6])
+            # Columns are titled "particle, t, Sx"
+        except:
+            missedRuns.append(i)
+            continue
+
+        simTotal += df["particle"].iloc[-1] - df["particle"].iloc[0]
+
+        for particleNum in np.arange(1, df["particle"].iloc[-1] + 1 ):
+            func = InterpolatedUnivariateSpline(df.query("particle == @particleNum")["t"], df.query("particle == @particleNum")["Sx"])
+            sxT2.append( func(t2Times) )
+
+    print("100%... Now Plotting")
+    print("Error reading run numbers-- ", missedRuns)
+    print("Number of neutrons simulated: ", simTotal)
+
+    # Find average for sx set
     sxT2 = np.transpose(sxT2)
+    sxAv = []
     sxDev = []
     for sxSet in sxT2:
+        sxAv.append( np.average(sxSet) )
         sxDev.append( np.std(sxSet) )
 
     # Plotting for sanity check
@@ -63,6 +71,14 @@ def main():
     plt.title('$\sigma$(Sx) over time')
     plt.xlabel('t [s]')
     plt.ylabel('$\sigma$')
+
+    fig = plt.figure()
+    plt.plot(t2Times, sxAv)
+    plt.grid(True)
+    plt.title('<Sx> over time')
+    plt.xlabel('t [s]')
+    plt.ylabel('<Sx>')
+
     plt.show()
     return
 
