@@ -11,7 +11,7 @@ W_MAX  = 183.3    #[rad s^-1]    What w to end with
 JOB_NUM_START = 0    # What job number at which to start labeling output files
 PBS_TEMPLATE = 'ramseyPBS.txt'     # torque PBS script template file
 CONFIG_TEMPLATE = 'ramseyConfig.txt'    # Ramsey pulse PENTrack config file
-RAMSEY_STL ='in/ramseyChamber_d=1m_h=01m.stl'   # name of the ramsey chamber stl file
+#RAMSEY_STL ='in/ramseyChamber_d=1m_h=01m.stl'   # name of the ramsey chamber stl file
 
 def main():
     import numpy as np
@@ -20,9 +20,9 @@ def main():
     import datetime
     import subprocess
 
-    if not os.path.isfile(RAMSEY_STL):
-        print("Error: Cannot find " + RAMSEY_STL)
-        return
+    # if not os.path.isfile(RAMSEY_STL):
+    #     print("Error: Cannot find " + RAMSEY_STL)
+    #     return
     if not os.path.isfile(PBS_TEMPLATE):
         print("Error: Cannot find " + PBS_TEMPLATE)
         return

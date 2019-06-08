@@ -29,15 +29,15 @@ ActiveTime 0
 PhaseSpaceWeighting 1
 
 Emin 0e-9
-Emax 100e-9
+Emax 200e-9
 spectrum 1
 
-phi_v_min 0			# min. azimuth angle of velocity
-phi_v_max 6.2831854		# max. azimuth angle of velocity
+phi_v_min 0			# min. azimuth angle of velocity [degrees]
+phi_v_max 360		# max. azimuth angle of velocity [degrees]
 phi_v 1				# differential initial distribution of azimuth angle of velocity - volume source only!
 
 theta_v_min 0		# min. polar angle of velocity
-theta_v_max 3.14159265	# max. polar angle of velocity
+theta_v_max 180	# max. polar angle of velocity
 theta_v sin(x)		# differential initial distribution of polar angle of velocity - volume source only!
 
 polarization 1		# 1: low-field-seeker, -1: high-field-seeker, 0: random
@@ -65,7 +65,7 @@ snapshotlog 0
 spinlog 1
 snapshots 0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180
 trackloginterval 5e-3
-spinloginterval 1e-3
+spinloginterval 5e-3
 
 spintimes 0 1000  # Spin tracking between these times
 Bmax 0.1
