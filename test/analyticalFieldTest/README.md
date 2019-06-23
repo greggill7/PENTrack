@@ -1,4 +1,4 @@
-guideTest
+analyticalFieldTest
 =========================
 
 Neutrons bounce around in a cylindrical guide tube with perfect
@@ -16,6 +16,3 @@ see a sharp spike in B field.
 For more, see config.in
 
 Run the test with ./RunTest.sh, edit parameters in the config file
-
-Visualize output by running graphstuff.py with the appropriate command line flags
-(python graphstuff.py --help)

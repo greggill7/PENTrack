@@ -102,3 +102,49 @@ int TLinearFieldZ::withinBounds(const double x, const double y, const double z) 
 	return ((x >= this->xmin) and (x <= this->xmax) and (y >= this->ymin)
 					and (y <= this->ymax)	and (z >= this->zmin) and (z <= this->zmax));
 }
+
+//TQuadFieldZ constructor
+TQuadFieldZ::TQuadFieldZ(const double _a1, const double _a2, const double _z0, const double _xmax, const double _xmin,
+									const double _ymax, const double _ymin, const double _zmax, const double _zmin)
+									: TField("1", "0") {
+	a1 = _a1; a2 = _a2; z0 = _z0;
+	xmax = _xmax; xmin = _xmin;
+	ymax = _ymax; ymin = _ymin;
+	zmax = _zmax; zmin = _zmin;
+
+}
+
+void TQuadFieldZ::BField(const double x, const double y, const double z, const double t, double B[3], double dBidxj[3][3]) const{
+
+	if (withinBounds(x, y, z)) {
+		B[0] = -(a1*z + a2)/2 * x; //Bx contribution
+		B[1] = -(a1*z + a2)/2 * y; //By contribution
+		B[2] = a1*z*z + a2*z + z0; //Bz contribution
+		if (dBidxj != NULL){
+			dBidxj[0][0] = -(a1*z + a2) / 2; // dBxdx
+			dBidxj[0][1] = 0; //dBxdy
+			dBidxj[0][2] = - a1*x / 2; //dBxdz
+			dBidxj[1][0] = 0; //dBydx
+			dBidxj[1][1] = -(a1*z + a2) / 2; //dBydy
+			dBidxj[1][2] = - a1*y / 2; //dBydz
+			dBidxj[2][0] = 0; //dBzdx
+			dBidxj[2][1] = 0; //dBzdy
+			dBidxj[2][2] = a1*z + a2; //dBzdz
+		}
+	} else {
+		//Field is 0 outside of bounds
+		for (int i = 0; i < 3; i++){
+			B[i] = 0;
+			if (dBidxj != NULL){
+				for (int j = 0; j < 3; j++)
+					dBidxj[i][j] = 0;
+			}
+		}
+	}
+}
+
+
+int TQuadFieldZ::withinBounds(const double x, const double y, const double z) const{
+	return ((x >= this->xmin) and (x <= this->xmax) and (y >= this->ymin)
+					and (y <= this->ymax)	and (z >= this->zmin) and (z <= this->zmax));
+}

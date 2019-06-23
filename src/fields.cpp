@@ -75,6 +75,13 @@ TFieldManager::TFieldManager(TConfig &conf){
 				f = new TLinearFieldZ(p1, p2, xma, xmi, yma, ymi, zma, zmi);
 		}
 
+		else if (type == "QuadFieldZ") {
+			ss >> p1 >> p2 >> p3 >> xma >> xmi >> yma >> ymi >> zma >> zmi;
+
+			if (ss)
+				f = new TQuadFieldZ(p1, p2, p3, xma, xmi, yma, ymi, zma, zmi);
+		}
+
 		else if (type == "EDM_AC_B1Field") {
 			ss >> p1 >> p2 >> p3 >> p4 >> p5 >> p6 >> p7 >> freq >> time1 >> time2 >> shift >> bW >> xma >> xmi >> yma >> ymi >> zma >> zmi >> Bscale;
 

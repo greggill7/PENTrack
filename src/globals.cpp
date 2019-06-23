@@ -12,6 +12,7 @@
 const long double pi = 3.1415926535897932384626L; ///< Pi
 const long double ele_e = 1.602176487E-19L; ///< elementary charge [C]
 const long double gravconst = 9.80665L; ///< g [m/s]
+// const long double gravconst = 0L; ///< g [m/s]
 const long double boltzconst = 1.38064852E-23L/ele_e; /// Boltzmann's constant [ev/K] from http://physics.nist.gov/cgi-bin/cuu/Value?sigma
 const long double avogadroconst = 6.022140857E23L; /// Avogadro's constant [ mol^-1 ] from http://physics.nist.gov/cgi-bin/cuu/Value?na|search_for=avagadro%27s+number
 const long double conv = pi/180.L; ///< deg to rad conversion factor
@@ -116,7 +117,6 @@ double ElectronBetaSpectrum(const double E){
 // from en.wikipedia.org/wiki/Maxwell%E2%80%93Boltzmann_distribution
 // result always < 1!
 double MaxwellBoltzSpectrum (const double T, const double E) {
-	double kT = boltzconst*T;  
+	double kT = boltzconst*T;
 	return 2*sqrt(E/pi)/sqrt(kT*kT*kT)*exp(-E/kT) / (2*sqrt(0.5/pi)/kT*exp(-0.5)); // return distribution divided by its maximum at E/kt = 0.5
 }
-
