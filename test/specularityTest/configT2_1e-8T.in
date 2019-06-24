@@ -1,8 +1,7 @@
-# Precession in a cell with nonspecular reflection
 [GLOBAL]
 simtype 1
-simcount 50
-simtime 50
+simcount 20
+simtime 120
 
 secondaries 0
 
@@ -11,7 +10,6 @@ secondaries 0
 #name		FermiReal [neV]		FermiImag [neV]		DiffuseReflectionProbability	SpinflipProbability	RMSroughness [m]	CorrelationLength [m]	UseMRmodel
 default		0			0			0				0			0			0			0
 perfect		1000			0			SPEC				0			0			0			0
-
 
 [GEOMETRY]
 #ID	STLfile				material_name		ignore_times
@@ -46,8 +44,17 @@ polarization 1		# 1: low-field-seeker, -1: high-field-seeker, 0: random
 
 [FIELDS]
 #EDMStaticB0GradZField   edmB0xoff edmB0yoff edmB0zoff pol_ang azm_ang edmB0z0 edmdB0z0dz BoundaryWidth xmax    xmin    ymax    ymin    zmax    zmin scale
-1 EDMStaticB0GradZField     0         0          0       0       0       1E-6    1E-8          0         1       -1      1       -1      1       -1      (t<1)?0:1
-2 EDMStaticB0GradZField     0         0          0       90       0       1E-6    0          0         1       -1      1       -1      1       -1      (t<1)?1:0
+1 EDMStaticB0GradZField     0         0          0       90       0       1E-6    0          0         1       -1      1       -1      1       -1      (t<1)?1:0
+#2 EDMStaticB0GradZField     0         0          0       0       0       1E-6    1E-8          0         1       -1      1       -1      1       -1      (t<1)?0:1
+
+# QuadFieldZ is described by:
+# B_z = a1 * z^2 + a2 z + z0
+# dBdz = a1 * z + a2
+# a1 = [T/m^2]; a2 = [T/m]; z0 = [T]
+# Field is turned off outside of the xyz min/max boundaries specified [meters]
+
+## QuadFieldZ    a1      a2     z0  xmax  xmin  ymax  ymin  zmax  zmin scale
+2 QuadFieldZ  1E-6    0     1E-6     1     -1     1     -1     1  -1   (t<1)?0:1
 
 [PARTICLES]
 tau 1

@@ -53,16 +53,16 @@ polarization 1		# 1: low-field-seeker (spin up), -1: high-field-seeker, 0: rando
 # Parameters a1, c1, and c2 should be units [Tesla]
 # Field is turned off outside of the xyz min/max boundaries specified [meters]
 
-## ExponentialFieldX a1  a2  a3  c1  c2  xmax  xmin  ymax  ymin  zmax  zmin
-#1 ExponentialFieldX 5E-5 1  -4 0   0   3     -3     1     -1     1     -1
+## ExponentialFieldX a1  a2  a3  c1  c2  xmax  xmin  ymax  ymin  zmax  zmin scale
+#1 ExponentialFieldX 5E-5 1  -4 0   0   3     -3     1     -1     1     -1  1
 
 # LinearFieldZ is described by:
 # B_z = a1*x + a2
 # a1 = [T/m] and a2 = [T]
 # Field is turned off outside of the xyz min/max boundaries specified [meters]
 
-## LinearFieldZ a1      a2     xmax  xmin  ymax  ymin  zmax  zmin
-#2 LinearFieldZ  2E-6   1E-6   0     -1     1     -1     1     -1
+## LinearFieldZ a1      a2     xmax  xmin  ymax  ymin  zmax  zmin scale
+#2 LinearFieldZ  2E-6   1E-6   0     -1     1     -1     1     -1   1
 
 ### EDMStaticB0GradZField   edmB0xoff edmB0yoff edmB0zoff pol_ang azm_ang edmB0z0 edmdB0z0dz BoundaryWidth xmax    xmin    ymax    ymin    zmax    zmin scale
 #3 EDMStaticB0GradZField     0         0          0       0       0       1E-6    0          0             3       0      1       -1      1       -1      1
@@ -73,8 +73,8 @@ polarization 1		# 1: low-field-seeker (spin up), -1: high-field-seeker, 0: rando
 # a1 = [T/m^2]; a2 = [T/m]; z0 = [T]
 # Field is turned off outside of the xyz min/max boundaries specified [meters]
 
-## QuadFieldZ    a1      a2     z0  xmax  xmin  ymax  ymin  zmax  zmin
-1 QuadFieldZ  1E-7    0     1E-6     1     -1     1     -1     1  -1
+## QuadFieldZ    a1      a2     z0  xmax  xmin  ymax  ymin  zmax  zmin scale
+1 QuadFieldZ  1E-5    0     1E-6     1     -1     1     -1     1  -1    1
 
 [PARTICLES]
 tau 1

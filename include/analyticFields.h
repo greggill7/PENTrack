@@ -40,11 +40,12 @@ public:
 	 * @param _ymin minimum y value for the field to be "on"
 	 * @param _zmax maximum z value for the field to be "on"
 	 * @param _zmin minimum z value for the field to be "on"
+	 * @param Bscale Formula to scale magnetic field
 	 *
 	 */
-	TExponentialFieldX(const double _a1, const double _a2, const double _a3,
-		 								const double _c1, const double _c2, const double _xmax, const double _xmin,
-										const double _ymax, const double _ymin, const double _zmax, const double _zmin);
+	TExponentialFieldX(const double _a1, const double _a2, const double _a3, const double _c1, const double _c2,
+										const double _xmax, const double _xmin, const double _ymax, const double _ymin,
+										const double _zmax, const double _zmin, const std::string &Bscale);
 
 	/**
 	 * Calculates B field B[3] and the derivatives dBidxj[3][3] for a given point x,y,z
@@ -102,10 +103,11 @@ public:
 	 * @param _ymin minimum y value for the field to be "on"
 	 * @param _zmax maximum z value for the field to be "on"
 	 * @param _zmin minimum z value for the field to be "on"
+	 * @param Bscale Formula to scale magnetic field
 	 *
 	 */
-	TLinearFieldZ(const double _a1, const double _a2, const double _xmax, const double _xmin,
-										const double _ymax, const double _ymin, const double _zmax, const double _zmin);
+	TLinearFieldZ(const double _a1, const double _a2, const double _xmax, const double _xmin, const double _ymax,
+										const double _ymin, const double _zmax, const double _zmin, const std::string &Bscale);
 
 	/**
 	 * Calculates B field B[3] and the derivatives dBidxj[3][3] for a given point x,y,z
@@ -166,10 +168,11 @@ public:
 	 * @param _ymin minimum y value for the field to be "on"
 	 * @param _zmax maximum z value for the field to be "on"
 	 * @param _zmin minimum z value for the field to be "on"
+	 * @param Bscale Formula to scale magnetic field
 	 *
 	 */
-	TQuadFieldZ(const double _a1, const double _a2, const double _z0, const double _xmax, const double _xmin,
-										const double _ymax, const double _ymin, const double _zmax, const double _zmin);
+	TQuadFieldZ(const double _a1, const double _a2, const double _z0, const double _xmax, const double _xmin, const double _ymax,
+										const double _ymin, const double _zmax, const double _zmin, const std::string &Bscale);
 
 	/**
 	 * Calculates B field B[3] and the derivatives dBidxj[3][3] for a given point x,y,z

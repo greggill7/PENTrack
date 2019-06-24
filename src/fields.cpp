@@ -62,24 +62,24 @@ TFieldManager::TFieldManager(TConfig &conf){
 		}
 
 		else if (type == "ExponentialFieldX") {
-			ss >> p1 >> p2 >> p3 >> p4 >> p5 >> xma >> xmi >> yma >> ymi >> zma >> zmi;
+			ss >> p1 >> p2 >> p3 >> p4 >> p5 >> xma >> xmi >> yma >> ymi >> zma >> zmi  >> Bscale;
 
 			if (ss)
-				f = new TExponentialFieldX(p1, p2, p3, p4, p5, xma, xmi, yma, ymi, zma, zmi);
+				f = new TExponentialFieldX(p1, p2, p3, p4, p5, xma, xmi, yma, ymi, zma, zmi, Bscale);
 		}
 
 		else if (type == "LinearFieldZ") {
-			ss >> p1 >> p2 >> xma >> xmi >> yma >> ymi >> zma >> zmi;
+			ss >> p1 >> p2 >> xma >> xmi >> yma >> ymi >> zma >> zmi >> Bscale;
 
 			if (ss)
-				f = new TLinearFieldZ(p1, p2, xma, xmi, yma, ymi, zma, zmi);
+				f = new TLinearFieldZ(p1, p2, xma, xmi, yma, ymi, zma, zmi, Bscale);
 		}
 
 		else if (type == "QuadFieldZ") {
-			ss >> p1 >> p2 >> p3 >> xma >> xmi >> yma >> ymi >> zma >> zmi;
+			ss >> p1 >> p2 >> p3 >> xma >> xmi >> yma >> ymi >> zma >> zmi >> Bscale;
 
 			if (ss)
-				f = new TQuadFieldZ(p1, p2, p3, xma, xmi, yma, ymi, zma, zmi);
+				f = new TQuadFieldZ(p1, p2, p3, xma, xmi, yma, ymi, zma, zmi, Bscale);
 		}
 
 		else if (type == "EDM_AC_B1Field") {
