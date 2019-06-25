@@ -13,7 +13,7 @@ D_MAX  = 0.35    #[rad s^-1]    What w to end with
 JOB_NUM_START = 1400    # What job number at which to start labeling output files
 JOB_PARALLEL = 100      # Number of parallel jobs
 PBS_TEMPLATE = 'in/jobSpec_parallel.pbs'     # torque PBS script template file
-CONFIG_TEMPLATE = 'in/configT2_1e-8T.in'    # Ramsey pulse PENTrack config file
+CONFIG_TEMPLATE = 'in/configT2.in'    # Ramsey pulse PENTrack config file
 
 def main():
     if not os.path.isfile(PBS_TEMPLATE):

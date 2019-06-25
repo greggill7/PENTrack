@@ -9,29 +9,13 @@ def main():
 
     yNeutron = 1.83247172e8 / 6.28318530718 # s^-1 T^-1. For adiabatic parameter calculation
     nbins = 200                             # number histogram bins
-    t2Times = np.arange(4, 185)                      # times to analyze t2
-    t2Temp = []
-    t = []
-    x = []
-    y = []
-    z = []
-    sx = []
-    sxT2 = []
     sxDev = []
-    sy = []
-    sz = []
-    wx = []
-    wy = []
-    wz = []
-    bx = []
-    by = []
-    bz = []
     bNorm = []
     proj = []
     adiab = []
 
     parser = argparse.ArgumentParser(description="Plot everything related to spin.out files")
-    parser.add_argument("-f", "--file", type=str, help = "Filename (default 000000000000neutronspin.out)")
+    parser.add_argument("-f", "--file", type=str, default='000000000000neutronspin.out', help = "Filename (default 000000000000neutronspin.out)")
     parser.add_argument("-p", "--proj", action="store_true", help = "Spin projection plots")
     parser.add_argument("-s", "--spin", action="store_true", help = "sx, sy, sz plots")
     parser.add_argument("-n", "--neutron", type=int, help = "Limit plots to one neutron in file")
@@ -41,34 +25,9 @@ def main():
     args = parser.parse_args()
 
     print("Reminder: Use --help or -h to see optional arguments")
-    if (args.file):
-        filename = args.file
-    else:
-        filename = '000000000000neutronspin.out'
 
-    try:
-        with open (filename,"r") as f1:
-            lines = f1.readlines()[1:]
-            for num, line in enumerate(lines):
-                text = line.split()
-                if (args.neutron != None) and (args.neutron != int( text[1])):
-                    continue
-                t.append(float( text[2]) )
-                x.append(float( text[3]) )
-                y.append(float( text[4]) )
-                z.append(float( text[5]) )
-                sx.append(float( text[6]) )
-                sy.append(float( text[7]) )
-                sz.append(float( text[8]) )
-                wx.append(float( text[9]) )
-                wy.append(float( text[10]) )
-                wz.append(float( text[11]) )
-                bx.append(float( text[12]) )
-                by.append(float( text[13]) )
-                bz.append(float( text[14]) )
-    except IOError:
-        print("Error reading ", filename)
-        return
+    t,x,y,z,sx,sy,sz,bx,by,bz = np.genfromtxt(args.file, skip_header=1, unpack=True, usecols=[2,3,4,5,6,7,8,12,13,14])
+
 
     # Calculate spin projection on magnetic fields
     np.seterr(divide='ignore', invalid='ignore')    # Ignore divide by 0 warnings
@@ -197,6 +156,25 @@ def main():
             ax14.set_ylabel('Sy')
             ax14.set_zlabel('Sz')
             ax14.view_init(30,220)
+
+            fig15 = plt.figure(15)
+            ax15 = fig15.add_subplot(111, projection='3d')
+            plt.title('Neutron Trajectory')
+            ax15.scatter(x, y, z)
+            ax15.set_xlim3d(-1,1)
+            ax15.set_ylim3d(-1,1)
+            ax15.set_zlim3d(-1,1)
+            ax15.set_xlabel('x')
+            ax15.set_ylabel('y')
+            ax15.set_zlabel('z')
+            ax15.view_init(30,220)
+    else:
+        if (args.adiab):
+            print("Error: [--adiab] requires [--neutron]")
+        if (args.fourier):
+            print("Error: [--fourier] requires [--neutron]")
+        if (args.threeD):
+            print("Error: [--threeD] requires [--neutron]")
 
     plt.show()
 

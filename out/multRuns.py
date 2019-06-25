@@ -30,6 +30,7 @@ def main():
 
     for i in runNum:
         runName = folder + str(i).zfill(12) + "neutronend.out"
+        print(i,"...", end="")
         try:
             df = pd.read_csv(runName, delim_whitespace=True, usecols=[1,10,11,12,18,19,20,21,26,27,28,32,33,34])
         except:
@@ -57,8 +58,8 @@ def main():
     if len(missedRuns) == len(runNum):
         print("Seems like no files were read correctly :(")
         return
-        
-    print("Error reading run numbers-- ", missedRuns)
+
+    print("\nError reading run numbers-- ", missedRuns)
     print("Average polarization: ", endPolTotal/endPolCount)
     print("Number of neutrons in histogram: ", int(np.sum(histTotal)))
     print("Number of neutrons simulated: ", simTotal)

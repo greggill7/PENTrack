@@ -15,7 +15,7 @@ def main():
     yTemp = []
 
     parser = argparse.ArgumentParser(description='Plots BFcut.out [--help]')
-    parser.add_argument("-f", "--file", type=str, help = "Filename (default BFCut.out)")
+    parser.add_argument("-f", "--file", type=str, default='BFCut.out', help = "Filename (default BFCut.out)")
     parser.add_argument("-xz", "--xzPlane", action="store_true", help = "Plots BFCut along xz plane")
     parser.add_argument("-yz", "--yzPlane", action="store_true", help = "Plots BFCut along yz plane")
     parser.add_argument("-n", "--norm", type=float, nargs=1, help = "Plots the flux norm along an arc length, fixed z")
@@ -26,14 +26,9 @@ def main():
         print("Please specify which plane you'd like to plot [--help]")
         return
 
-    if (args.file):
-        filename = args.file
-    else:
-        filename = 'BFCut.out'
-
     # Read in files
     try:
-        with open (filename,"r") as f1:
+        with open (args.file,"r") as f1:
             lines = f1.readlines()[1:]
             for num, line in enumerate(lines):
                 text = line.split(' ')
@@ -46,7 +41,7 @@ def main():
                     by.append(float( text[4]) )
                     bz.append(float( text[8]) )
     except IOError:
-        print("Error reading ", filename)
+        print("Error reading ", args.file)
         return
 
     if (len(x) != len(bx)):

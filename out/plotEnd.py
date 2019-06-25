@@ -8,55 +8,16 @@ def main():
     from mpl_toolkits.mplot3d import Axes3D
 
     nbins = 200
-    particle = []
-    sxStart = []
-    syStart = []
-    szStart = []
-    sxEnd = []
-    syEnd = []
-    szEnd = []
-    bxEnd = []
-    byEnd = []
-    bzEnd = []
-    xEnd = []
-    yEnd = []
-    zEnd = []
-
+    
     parser = argparse.ArgumentParser(description='Plots neutronend.out histograms')
-    parser.add_argument("-f", "--file", type=str, help = "Filename (default 000000000000neutronend.out)")
+    parser.add_argument("-f", "--file", type=str, default='000000000000neutronend.out', help = "Filename (default 000000000000neutronend.out)")
     parser.add_argument("-s", "--save", action="store_true", help = "Saves histogram to endPol.png")
     parser.add_argument("-pos", "--position", action="store_true", help = "Plots end position of neutrons")
     args = parser.parse_args()
 
     print("Reminder: Use --help or -h to see optional arguments")
-    if (args.file):
-        filename = args.file
-    else:
-        filename = '000000000000neutronend.out'
 
-    try:
-        with open (filename,"r") as f1:
-            lines = f1.readlines()[1:]
-            for num, line in enumerate(lines):
-                text = line.split()
-                if len(text) < 34:
-                    break
-                particle.append(int( text[1]) )
-                sxStart.append(float( text[10]) )
-                syStart.append(float( text[11]) )
-                szStart.append(float( text[12]) )
-                xEnd.append(float( text[19]))
-                yEnd.append(float( text[20]))
-                zEnd.append(float( text[21]))
-                sxEnd.append(float( text[26]) )
-                syEnd.append(float( text[27]) )
-                szEnd.append(float( text[28]) )
-                bxEnd.append(float( text[32]) )
-                byEnd.append(float( text[33]) )
-                bzEnd.append(float( text[34]) )
-    except IOError:
-        print("Error reading ", filename)
-        return
+    particle, sxStart, syStart, szStart, xEnd, yEnd, zEnd, sxEnd, syEnd, szEnd, bxEnd, byEnd, bzEnd = np.genfromtxt(args.file, skip_header=1, unpack=True, usecols=[1,10,11,12,19,20,21,26,27,28,32,33,34])
 
     # Find projection of S vector (unit vector) onto B vector (not unit vector)
     endProj = []        # Projection of S_end onto B_end for multiple neutrons
@@ -69,6 +30,7 @@ def main():
     print("Total neutrons in simulation: ", particle[-1])
     print("Total neutrons in histogram: ", len(endProj))
     print("Av Sz end: ", np.average(szEnd))
+    print("Av Bz end: ", np.average(bzEnd))
     print("Average polarization: ", np.average(endProj))
 
     fig, ax = plt.subplots()

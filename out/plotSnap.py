@@ -11,7 +11,7 @@ def main():
     endProj = []    # 2d array (# of time elements by # particles)
 
     parser = argparse.ArgumentParser(description='Makes plots related to neutronsnapshot.out')
-    parser.add_argument("-f", "--file", type=str, help = "Filename (default 000000000000neutronsnapshot.out)")
+    parser.add_argument("-f", "--file", default='000000000000neutronsnapshot.out', type=str, help = "Filename (default 000000000000neutronsnapshot.out)")
     args = parser.parse_args()
 
     print("Reminder: Use --help or -h to see optional arguments")
@@ -19,13 +19,8 @@ def main():
         print("Missing flags. See [--help]")
         return
 
-    if (args.file):
-        filename = args.file
-    else:
-        filename = '000000000000neutronsnapshot.out'
-
     try:
-        with open (filename,"r") as f1:
+        with open (args.file,"r") as f1:
             lines = f1.readlines()[1:]
             for num, line in enumerate(lines):
                 text = line.split()
@@ -45,7 +40,7 @@ def main():
                 endProj[ time.index(tEnd) ].append( (sxE*bxE + syE*byE + szE*bzE)/norm(bxE, byE, bzE))
 
     except IOError:
-        print("Error reading ", filename)
+        print("Error reading ", args.file)
         return
 
     for end, t in zip(endProj, time):
