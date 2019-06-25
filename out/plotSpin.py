@@ -3,15 +3,13 @@
 
 def main():
     import numpy as np
+    import pandas as pd
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
     import argparse
 
     yNeutron = 1.83247172e8 / 6.28318530718 # s^-1 T^-1. For adiabatic parameter calculation
     nbins = 200                             # number histogram bins
-    sxDev = []
-    bNorm = []
-    proj = []
     adiab = []
 
     parser = argparse.ArgumentParser(description="Plot everything related to spin.out files")
@@ -19,45 +17,51 @@ def main():
     parser.add_argument("-p", "--proj", action="store_true", help = "Spin projection plots")
     parser.add_argument("-s", "--spin", action="store_true", help = "sx, sy, sz plots")
     parser.add_argument("-n", "--neutron", type=int, help = "Limit plots to one neutron in file")
-    parser.add_argument("-a", "--adiab", action="store_true", help = "Finds adiabaticity (needs -n enabled)")
-    parser.add_argument("-four", "--fourier", action="store_true", help = "Prints fourier transform of spin components (needs -n enabled)")
-    parser.add_argument("-td", "--threeD", action="store_true", help = "3d plot of spin vector (needs -n enabled)")
+    parser.add_argument("-a", "--adiab", action="store_true", help = "Finds adiabaticity (dB/dt)/(y B^2) [needs -n enabled]")
+    parser.add_argument("-four", "--fourier", action="store_true", help = "Prints fourier transform of spin components [needs -n enabled]")
+    parser.add_argument("-td", "--threeD", action="store_true", help = "3d plot of spin vector [needs -n enabled]")
     args = parser.parse_args()
 
     print("Reminder: Use --help or -h to see optional arguments")
+    print("Reading file")
 
-    t,x,y,z,sx,sy,sz,bx,by,bz = np.genfromtxt(args.file, skip_header=1, unpack=True, usecols=[2,3,4,5,6,7,8,12,13,14])
+    if args.neutron:
+        df = pd.read_csv(args.file, delim_whitespace=True, usecols=[1,2,3,4,5,6,7,8,12,13,14]).query('particle == @args.neutron')
+    else:
+        df = pd.read_csv(args.file, delim_whitespace=True, usecols=[1,2,3,4,5,6,7,8,12,13,14])
+    # Column names are ['particle', 't', 'x', 'y', 'z', 'Sx', 'Sy', 'Sz', 'Bx', 'By', 'Bz']
 
 
-    # Calculate spin projection on magnetic fields
+    # # # Calculate spin projection on magnetic fields
     np.seterr(divide='ignore', invalid='ignore')    # Ignore divide by 0 warnings
+    df['bNorm'] = np.sqrt(df['Bx']**2 + df['By']**2 + df['Bz']**2)
+    df['proj'] = (df['Sx']*df['Bx'] + df['Sy']*df['By'] + df['Sz']*df['Bz'])/df['bNorm']
 
-    for i, (bxi, byi, bzi, sxi, syi, szi) in enumerate(zip(bx, by, bz, sx, sy, sz)):
-        bNorm.append(norm(bxi, byi, bzi))
-        proj.append( (sxi*bxi + syi*byi + szi*bzi)/bNorm[i] )
-        # Calculate adiabatic parameter for a given neutron
-        # (dB/dt)/(y B^2)
-        if (args.neutron != None) and (i != 0):
-            adiab.append(( np.abs(bNorm[i]-bNorm[i-1])/(t[i]-t[i-1]))/ (yNeutron * bNorm[i]**2))
+    # Calculate adiabatic parameter for a given neutron
+    # (dB/dt)/(y B^2)
+    if args.neutron and args.adiab:
+        for i in range(1,len(df.index)):
+            adiab.append(( np.abs(df['bNorm'].iloc[i]-df['bNorm'].iloc[i-1])/(df['t'].iloc[i]-df['t'].iloc[i-1]))/ (yNeutron * df['bNorm'].iloc[i]**2))
 
-    # PLOT STUFF #
+    # # PLOT STUFF #
+    print("Plotting...")
     if (args.proj):
         fig1 = plt.figure(1)
-        plt.plot(x, proj, ".",markersize=0.5)
+        plt.plot(df['x'], df['proj'], ".",markersize=0.5)
         plt.grid(True)
         plt.title('x vs Spin Proj')
         plt.xlabel('x [m]')
         plt.ylabel('Projection of S on B')
 
         fig2 = plt.figure(2)
-        plt.plot(t, proj, ".",markersize=0.5)
+        plt.plot(df['t'], df['proj'], ".",markersize=0.5)
         plt.grid(True)
         plt.title('t vs Spin Proj')
         plt.xlabel('t [s]')
         plt.ylabel('Projection of S on B')
 
         fig3 = plt.figure(3)
-        plt.plot(t, x, ".",markersize=0.5)
+        plt.plot(df['t'], df['x'], ".",markersize=0.5)
         plt.grid(True)
         plt.title('time vs position')
         plt.xlabel('t [s]')
@@ -65,42 +69,42 @@ def main():
 
     if (args.spin):
         fig4 = plt.figure(4)
-        plt.plot(x, sx)
+        plt.plot(df['x'], df['Sx'])
         plt.grid(True)
         plt.title('Sx(x)')
         plt.xlabel('x [m]')
         plt.ylabel('P(x)')
 
         fig5 = plt.figure(5)
-        plt.plot(x, sy)
+        plt.plot(df['x'], df['Sy'])
         plt.grid(True)
         plt.title('Sy(x)')
         plt.xlabel('x [m]')
         plt.ylabel('P(y)')
 
         fig6 = plt.figure(6)
-        plt.plot(x, sz, ".",markersize=0.5)
+        plt.plot(df['x'], df['Sz'], ".",markersize=0.5)
         plt.grid(True)
         plt.title('Sz(x)')
         plt.xlabel('x [m]')
         plt.ylabel('P(z)')
 
         fig7 = plt.figure(7)
-        plt.plot(t, sx)
+        plt.plot(df['t'], df['Sx'])
         plt.grid(True)
         plt.title('Sx(t)')
         plt.xlabel('t [s]')
         plt.ylabel('P(x)')
 
         fig8 = plt.figure(8)
-        plt.plot(t, sy)
+        plt.plot(df['t'], df['Sy'])
         plt.grid(True)
         plt.title('Sy(t)')
         plt.xlabel('t [s]')
         plt.ylabel('P(y)')
 
         fig9 = plt.figure(9)
-        plt.plot(t, sz)
+        plt.plot(df['t'], df['Sz'])
         plt.grid(True)
         plt.title('Sz(t)')
         plt.xlabel('t [s]')
@@ -109,7 +113,7 @@ def main():
     if (args.neutron):
         if (args.adiab):
             fig10 = plt.figure(10)
-            plt.plot(x[1:], adiab)
+            plt.plot(df['x'].tolist()[1:], adiab)
             plt.grid(True)
             plt.title('Adiabatic parameter')
             # plt.ylim(-5,5)
@@ -117,29 +121,27 @@ def main():
             plt.ylabel('k')
 
         if (args.fourier):        # Fourier transform graphs
-            # Calculate fourier transform of oscillation in Sy and Sz
-            timestep = t[-1]
-            fourSx = np.fft.fft(sx)
-            fourSy = np.fft.fft(sy)
-            fourSz = np.fft.fft(sz)
-            freqX = np.fft.fftfreq( len(sx), d=timestep )
-            freqY = np.fft.fftfreq( len(sz), d=timestep )
-            freqZ = np.fft.fftfreq( len(sz), d=timestep )
+            # Calculate fourier transform of oscillation in Sx Sy Sz
+            timestep = df['t'].iloc[-1]/len(df.index)
+            fourSx = np.fft.fft(df['Sx'].tolist())
+            fourSy = np.fft.fft(df['Sy'].tolist())
+            fourSz = np.fft.fft(df['Sz'].tolist())
+            freq = np.fft.fftfreq( len(df.index), d=timestep )
 
             fig11 = plt.figure(11)
-            plt.plot(freqY, np.abs(fourSy) )
+            plt.plot(freq, np.abs(fourSy) )
             plt.grid(True)
             plt.xlabel('[Hz]')
             plt.title('Fourier transform of Sy')
 
             fig12 = plt.figure(12)
-            plt.plot(freqZ, np.abs(fourSz) )
+            plt.plot(freq, np.abs(fourSz) )
             plt.grid(True)
             plt.xlabel('[Hz]')
             plt.title('Fourier transform of Sz')
 
             fig13 = plt.figure(13)
-            plt.plot(freqX, np.abs(fourSx) )
+            plt.plot(freq, np.abs(fourSx) )
             plt.grid(True)
             plt.xlabel('[Hz]')
             plt.title('Fourier transform of Sx')
@@ -148,7 +150,7 @@ def main():
             fig14 = plt.figure(14)
             ax14 = fig14.add_subplot(111, projection='3d')
             plt.title('(Semi classical) Spin')
-            ax14.scatter(sx, sy, sz)
+            ax14.scatter(df['Sx'], df['Sy'], df['Sz'])
             ax14.set_xlim3d(-1,1)
             ax14.set_ylim3d(-1,1)
             ax14.set_zlim3d(-1,1)
@@ -160,7 +162,7 @@ def main():
             fig15 = plt.figure(15)
             ax15 = fig15.add_subplot(111, projection='3d')
             plt.title('Neutron Trajectory')
-            ax15.scatter(x, y, z)
+            ax15.scatter(df['x'], df['y'], df['z'])
             ax15.set_xlim3d(-1,1)
             ax15.set_ylim3d(-1,1)
             ax15.set_zlim3d(-1,1)
@@ -179,27 +181,6 @@ def main():
     plt.show()
 
     return
-
-def norm (x, y, z):
-    #Finds norm of cartesian vector components
-    import numpy as np
-    return np.sqrt(x*x + y*y + z*z)
-
-def closestInd(val1, val2, range):
-    # Determines if "val1" and "val2" contains some value in the list "range"
-    # between them. Assumes val2 > val 1. Returns index in range of the value if true,
-    # returns None if false
-    import numpy as np
-    from bisect import bisect_left
-
-    startInd = bisect_left(range, val1)
-    if (startInd == len(range)):
-        startInd = startInd - 1
-
-    if ( val1 <= range[startInd] and val2 > range[startInd]):
-        return startInd
-    else:
-        return None
 
 if ( __name__ == '__main__' ):
     main()
