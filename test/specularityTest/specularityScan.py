@@ -7,11 +7,11 @@ import datetime
 import subprocess
 
 # Some initial parameters
-D_STEP_NUM = 4  #Number of steps in your scan
-D_START = 0.2   #[rad s^-1]    What specularity to start with
-D_MAX  = 0.35    #[rad s^-1]    What w to end with
-JOB_NUM_START = 1400    # What job number at which to start labeling output files
-JOB_PARALLEL = 100      # Number of parallel jobs
+D_STEP_NUM = 2  #Number of steps in your scan
+D_START = 0   #What specularity to start with
+D_END  = 0.05    #What specularity to end with
+JOB_NUM_START = 0    # What job number at which to start labeling output files
+JOB_PARALLEL = 200      # Number of parallel jobs per step
 PBS_TEMPLATE = 'in/jobSpec_parallel.pbs'     # torque PBS script template file
 CONFIG_TEMPLATE = 'in/configT2.in'    # Ramsey pulse PENTrack config file
 
@@ -23,7 +23,7 @@ def main():
         print("Error: Cannot find " + CONFIG_TEMPLATE)
         return
 
-    dRange = np.linspace(D_START, D_MAX, D_STEP_NUM,endpoint=True)
+    dRange = np.linspace(D_START, D_END, D_STEP_NUM,endpoint=True)
     jobCounter = JOB_NUM_START
     filenames = []
 

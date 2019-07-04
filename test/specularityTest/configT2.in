@@ -1,7 +1,7 @@
 [GLOBAL]
 simtype 1
-simcount 20
-simtime 120
+simcount 1
+simtime 10
 
 secondaries 0
 
@@ -11,16 +11,16 @@ secondaries 0
 default		0			0			0				0			0			0			0
 perfect		1000			0			SPEC				0			0			0			0
 
+
 [GEOMETRY]
 #ID	STLfile				material_name		ignore_times
 1	ignored				default
 2	ramseyChamber_d=1m_h=01m.stl	perfect
 
-
 [SOURCE]
 sourcemode cylvolume  #particle starting values are diced in the given parameter range (r,phi,z) [m,degree,m]
 #			r_min	r_max	phi_min	phi_max	z_min	z_max (cylvolume/cylsurface)
-parameters 0	    0.1  	0	    360	    -0.04  	0.04
+parameters 0	    0.4  	0	    360	    -0.04  	0.04
 
 particle neutron
 
@@ -47,14 +47,32 @@ polarization 1		# 1: low-field-seeker, -1: high-field-seeker, 0: random
 1 EDMStaticB0GradZField     0         0          0       90       0       1E-6    0          0         1       -1      1       -1      1       -1      (t<1)?1:0
 #2 EDMStaticB0GradZField     0         0          0       0       0       1E-6    1E-8          0         1       -1      1       -1      1       -1      (t<1)?0:1
 
-# QuadFieldZ is described by:
+# B0GradZ is described by:
 # B_z = a1 * z^2 + a2 z + z0
 # dBdz = a1 * z + a2
 # a1 = [T/m^2]; a2 = [T/m]; z0 = [T]
 # Field is turned off outside of the xyz min/max boundaries specified [meters]
 
-## QuadFieldZ    a1      a2     z0  xmax  xmin  ymax  ymin  zmax  zmin scale
-2 QuadFieldZ  1E-6    0     1E-6     1     -1     1     -1     1  -1   (t<1)?0:1
+## B0GradZ    a1      a2     z0  xmax  xmin  ymax  ymin  zmax  zmin scale
+#2 B0GradZ  1E-6    0     1E-6     1     -1     1     -1     1  -1   (t<1)?0:1
+
+# B0GradX2 is described by:
+# B_z = (a_1 x^2 + a_2 x + a3) z + z0
+# dBdz = a_1 x^2 + a_2 x + a3
+
+## B0GradX2    a1      a2   a3     z0  xmax  xmin  ymax  ymin  zmax  zmin scale
+#2 B0GradX2  1E-8    0      0       1E-6     1     -1     1     -1     1  -1   (t<1)?0:1
+
+## B0GradX2    a1      a2       a3     z0       xmax  xmin  ymax  ymin  zmax  zmin scale
+#2 B0GradX2     0      1E-8      0     1E-6     1     -1     1     -1     1  -1   (t<1)?0:1
+
+# B0GradXY is described by:
+# B_z = a_1 xyz + a_2 z + z0
+# dBdz =  a_1 xy + a_2
+# Field is turned off outside of the xyz min/max boundaries specified [meters]
+
+## B0GradXY    a1      a2     z0       xmax  xmin  ymax  ymin  zmax  zmin scale
+#2 B0GradXY  1E-8       0     1E-6     1     -1     1     -1     1  -1   (t<1)?0:1
 
 [PARTICLES]
 tau 1

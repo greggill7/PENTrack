@@ -24,8 +24,8 @@ def main():
     ###### arguments #######
     folder = '/N/dc2/scratch/dkwong/'
     joblist = 'joblist.out'
-    tRange = [2,48]  # sec
-    tStep  = 0.01    # sec
+    tRange = [2,99]  # sec
+    tStep  = 0.001    # sec
     ########################
 
     print('Reading ', joblist)
@@ -49,8 +49,8 @@ def main():
             t2Times = np.arange(tRange[0],tRange[1] + tStep, tStep)
             simTotal = 0
             missedRuns = []
-            sxT2 = []
-            syT2 = []
+            sxT2 = np.zeros(len(t2Times))
+            syT2 = np.zeros(len(t2Times))
 
             for i in runNum:
                 runName = folder + str(i).zfill(12) + 'neutronspin.out'
@@ -65,19 +65,29 @@ def main():
 
                 simTotal += df['particle'].iloc[-1]
 
-                for particleNum in np.arange(1, df['particle'].iloc[-1] + 1 ):
-                    interpX = InterpolatedUnivariateSpline(df.query('particle == @particleNum')['t'], df.query('particle == @particleNum')['Sx'])
-                    interpY = InterpolatedUnivariateSpline(df.query('particle == @particleNum')['t'], df.query('particle == @particleNum')['Sy'])
-                    sxT2.append( interpX(t2Times) )
-                    syT2.append( interpY(t2Times) )
+                for particleNum in np.arange(1, df["particle"].iloc[-1] + 1 ):
+                    # Skip canceled runs
+                    if t2Times[-1] > df.query("particle == @particleNum")["t"].iloc[-1]:
+                        simTotal -= 1
+                        continue
+                    # Interpolate
+                    try:
+                        interpX = InterpolatedUnivariateSpline(df.query("particle == @particleNum")["t"], df.query("particle == @particleNum")["Sx"])
+                        interpY = InterpolatedUnivariateSpline(df.query("particle == @particleNum")["t"], df.query("particle == @particleNum")["Sy"])
+                        # sxT2.append( interpX(t2Times) )
+                        # syT2.append( interpY(t2Times) )
+                        sxT2 = sxT2 + np.array(interpX(t2Times))
+                        syT2 = syT2 + np.array(interpY(t2Times))
+                    except:
+                        simTotal -= 1
                 # ENDFOR
 
             print('okay!')
             print('Error reading run numbers-- ', missedRuns)
             print('Number of neutrons simulated: ', simTotal)
 
-            sxAv = np.mean(sxT2, axis=0, dtype=np.float64)
-            syAv = np.mean(syT2, axis=0, dtype=np.float64)
+            sxAv = sxT2/simTotal
+            syAv = syT2/simTotal
 
             print('Saving t2Times, <Sx>, <Sy> to ', outputFileName)
             np.savetxt(outputFileName, np.c_[t2Times, sxAv, syAv])
@@ -103,10 +113,11 @@ def main():
     fig = plt.figure()
     plt.plot(spec, t2Estimate, marker='.')
     plt.grid(True)
-    plt.xlabel('Specularity')
+    plt.xlabel('Diffuse Reflection Prob')
     plt.ylabel('T2 [sec]')
 
     plt.savefig(t2filename + '.png')
+    print('Done')
 
 
 

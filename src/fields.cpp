@@ -75,11 +75,25 @@ TFieldManager::TFieldManager(TConfig &conf){
 				f = new TLinearFieldZ(p1, p2, xma, xmi, yma, ymi, zma, zmi, Bscale);
 		}
 
-		else if (type == "QuadFieldZ") {
+		else if (type == "B0GradZ") {
 			ss >> p1 >> p2 >> p3 >> xma >> xmi >> yma >> ymi >> zma >> zmi >> Bscale;
 
 			if (ss)
-				f = new TQuadFieldZ(p1, p2, p3, xma, xmi, yma, ymi, zma, zmi, Bscale);
+				f = new TB0GradZ(p1, p2, p3, xma, xmi, yma, ymi, zma, zmi, Bscale);
+		}
+
+		else if (type == "B0GradX2") {
+			ss >> p1 >> p2 >> p3 >> p4 >> xma >> xmi >> yma >> ymi >> zma >> zmi >> Bscale;
+
+			if (ss)
+				f = new TB0GradX2(p1, p2, p3, p4, xma, xmi, yma, ymi, zma, zmi, Bscale);
+		}
+
+		else if (type == "B0GradXY") {
+			ss >> p1 >> p2 >> p3 >> xma >> xmi >> yma >> ymi >> zma >> zmi >> Bscale;
+
+			if (ss)
+				f = new TB0GradXY(p1, p2, p3, xma, xmi, yma, ymi, zma, zmi, Bscale);
 		}
 
 		else if (type == "EDM_AC_B1Field") {
