@@ -52,8 +52,6 @@ def main():
         t2Times = np.arange(args.time[0],args.time[1] + args.step[0],args.step[0])
         simTotal = 0
         missedRuns = []
-        # sxT2 = []
-        # syT2 = []
         sxT2 = np.zeros(len(t2Times))
         syT2 = np.zeros(len(t2Times))
 
@@ -73,15 +71,14 @@ def main():
 
             for particleNum in np.arange(1, df["particle"].iloc[-1] + 1 ):
                 # Skip canceled runs
-                if t2Times[-1] > df.query("particle == @particleNum")["t"].iloc[-1]:
+                if t2Times[-2] > df.query("particle == @particleNum")["t"].iloc[-1]:
                     simTotal -= 1
+                    print(df.query("particle == @particleNum")["t"].iloc[-1])
                     continue
                 # Interpolate
                 try:
                     interpX = InterpolatedUnivariateSpline(df.query("particle == @particleNum")["t"], df.query("particle == @particleNum")["Sx"])
                     interpY = InterpolatedUnivariateSpline(df.query("particle == @particleNum")["t"], df.query("particle == @particleNum")["Sy"])
-                    # sxT2.append( interpX(t2Times) )
-                    # syT2.append( interpY(t2Times) )
                     sxT2 = sxT2 + np.array(interpX(t2Times))
                     syT2 = syT2 + np.array(interpY(t2Times))
                 except:
@@ -92,8 +89,6 @@ def main():
         print("Number of neutrons simulated: ", simTotal)
 
         # Find average for sx set
-        # sxAv = np.mean(sxT2, axis=0, dtype=np.float64)
-        # syAv = np.mean(syT2, axis=0, dtype=np.float64)
         sxAv = sxT2/simTotal
         syAv = syT2/simTotal
 
@@ -115,17 +110,17 @@ def main():
     print(popt)
     print("+/- [",np.sqrt(pcov[0][0]),", ", np.sqrt(pcov[1][1]), "]")
 
-    # Plotting
-    print("\nPlotting...")
-    fig = plt.figure()
-    plt.plot(t2Times, decayCurve,color='C0')
-    plt.plot(t2Times, fit(t2Times, *popt), color='C1',label="fit")
-    plt.grid(True)
-    plt.xlabel('t [s]')
-    plt.ylabel('<Sx>^2+<Sy>^2')
-    plt.legend()
 
     if args.output:
+        # Plotting
+        print("\nPlotting...")
+        fig = plt.figure()
+        plt.plot(t2Times, decayCurve,color='C0')
+        plt.plot(t2Times, fit(t2Times, *popt), color='C1',label="fit")
+        plt.grid(True)
+        plt.xlabel('t [s]')
+        plt.ylabel('<Sx>^2+<Sy>^2')
+        plt.legend()
         plt.savefig(noExt(args.output,'.txt') + '.png')
 
     return

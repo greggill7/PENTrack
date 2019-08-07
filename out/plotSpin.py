@@ -31,6 +31,11 @@ def main():
         df = pd.read_csv(args.file, delim_whitespace=True, usecols=[1,2,3,4,5,6,7,8,12,13,14])
     # Column names are ['particle', 't', 'x', 'y', 'z', 'Sx', 'Sy', 'Sz', 'Bx', 'By', 'Bz']
 
+    # # Make additional cuts here...
+    # for particleNum in df['particle'].unique():
+    #     if (df.query('particle== @particleNum')['x'].iloc[-1] > 0) or (particleNum in [39,41,77,81,93] ) or (not df.query('particle==@particleNum and x>2.17').empty):
+    #         df.drop( df[ df.particle == particleNum ].index, inplace=True)
+    #         print('Cutting neutron ', particleNum)
 
     # # # Calculate spin projection on magnetic fields
     np.seterr(divide='ignore', invalid='ignore')    # Ignore divide by 0 warnings
@@ -113,11 +118,11 @@ def main():
     if (args.neutron):
         if (args.adiab):
             fig10 = plt.figure(10)
-            plt.plot(df['x'].tolist()[1:], adiab)
+            plt.plot(df['t'].tolist()[1:], adiab)
             plt.grid(True)
             plt.title('Adiabatic parameter')
             # plt.ylim(-5,5)
-            plt.xlabel('x [m]')
+            plt.xlabel('t [sec]')
             plt.ylabel('k')
 
         if (args.fourier):        # Fourier transform graphs
@@ -163,9 +168,9 @@ def main():
             ax15 = fig15.add_subplot(111, projection='3d')
             plt.title('Neutron Trajectory')
             ax15.scatter(df['x'], df['y'], df['z'])
-            ax15.set_xlim3d(-1,1)
-            ax15.set_ylim3d(-1,1)
-            ax15.set_zlim3d(-1,1)
+            # ax15.set_xlim3d(-1,1)
+            # ax15.set_ylim3d(-1,1)
+            # ax15.set_zlim3d(-1,1)
             ax15.set_xlabel('x')
             ax15.set_ylabel('y')
             ax15.set_zlabel('z')

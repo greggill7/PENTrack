@@ -70,6 +70,11 @@ def main():
             simTotal += df["particle"].iloc[-1]
 
             for particleNum in np.arange(1, df["particle"].iloc[-1] + 1 ):
+                # Skip canceled runs
+                if t1Times[-2] > df.query("particle == @particleNum")["t"].iloc[-1]:
+                    simTotal -= 1
+                    print(df.query("particle == @particleNum")["t"].iloc[-1])
+                    continue
                 interp = InterpolatedUnivariateSpline(df.query("particle == @particleNum")["t"], df.query("particle == @particleNum")["Sz"])
                 # szT1.append( interp(t1Times) )
                 szT1 = szT1 + np.array( interp(t1Times) )
@@ -98,18 +103,16 @@ def main():
     print(popt)
     print("+/- [",np.sqrt(pcov[0][0]),", ", np.sqrt(pcov[1][1]), "]")
 
-    # Plotting
-    print("\nPlotting...")
-    fig = plt.figure()
-    plt.plot(t1Times, szAv,color='C0', label="<sz>")
-    plt.plot(t1Times, fit(t1Times, *popt), color='C1', label="Fit")
-    plt.grid(True)
-    plt.xlabel('t [s]')
-    plt.ylabel('<Sz>')
-
-    plt.legend()
-
     if args.output:
+        # Plotting
+        print("\nPlotting...")
+        fig = plt.figure()
+        plt.plot(t1Times, szAv,color='C0', label="<sz>")
+        plt.plot(t1Times, fit(t1Times, *popt), color='C1', label="Fit")
+        plt.grid(True)
+        plt.xlabel('t [s]')
+        plt.ylabel('<Sz>')
+        plt.legend()
         plt.savefig(noExt(args.output,'.txt') + '.png')
 
     return

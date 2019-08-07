@@ -3,6 +3,7 @@
 def main():
     import matplotlib.pyplot as plt
     import argparse
+    import numpy as np
 
     x = []
     y = []
@@ -19,6 +20,7 @@ def main():
     parser.add_argument("-xz", "--xzPlane", action="store_true", help = "Plots BFCut along xz plane")
     parser.add_argument("-yz", "--yzPlane", action="store_true", help = "Plots BFCut along yz plane")
     parser.add_argument("-n", "--norm", type=float, nargs=1, help = "Plots the flux norm along an arc length, fixed z")
+    parser.add_argument("-a", "--adiab", action="store_true", help = "If --norm enabled, plots adiabaticity")
     args = parser.parse_args()
 
     print("Reminder: Use --help or -h to see optional arguments")
@@ -49,7 +51,7 @@ def main():
         return
 
     if args.xzPlane:
-        fig1 = plt.figure(1)
+        fig = plt.figure()
         plt.quiver(x[::5], z[::5], bx[::5], bz[::5], units='x')
         plt.title('Vector Field xz plane')
 
@@ -58,19 +60,39 @@ def main():
                 if z0 == args.norm[0]:
                     xTemp.append(x0)
                     bNorm.append( norm(b1, b2, b3) )
-
             if not bNorm:
                 print("BNorm plot empty (Cut line z = ", args.norm, ")")
 
-            fig2 =  plt.figure(2)
-            plt.plot(xTemp, bNorm)
-            plt.title('B field norm')
-            plt.grid(True)
-            plt.xlabel('x [m]')
-            plt.ylabel('|B| [T]')
+            if args.adiab:
+                k = calcAdiab(x, bx, by, bz)
+                nonAdiab = 1./ np.array(k)
+                plt.figure()
+                plt.plot(x[0:-2], k, label='k')
+                plt.xlabel('[m]')
+                plt.yscale('log')
+                plt.legend()
+                plt.grid()
+
+                plt.figure()
+                plt.plot(x[0:-2], nonAdiab, label='1/k')
+                plt.xlabel('[m]')
+                plt.legend()
+                plt.grid()
+
+        plt.figure()
+        plt.plot(x, bx, label=r'$B_x$')
+        plt.plot(x, by, label=r'$B_y$')
+        plt.plot(x, bz, label=r'$B_z$')
+        plt.plot(x, bNorm, label=r'$\Vert B \Vert$')
+        plt.ylabel('[Tesla]')
+        plt.xlabel('[m]')
+        plt.legend()
+        plt.grid()
+
+
 
     if args.yzPlane:
-        fig3 = plt.figure(3)
+        fig = plt.figure()
         plt.quiver(y[::5], z[::5], by[::5], bz[::5], units='x')
         plt.title('Vector Field yz plane')
 
@@ -79,20 +101,54 @@ def main():
                 if z0 == args.norm[0]:
                     yTemp.append(y0)
                     bNorm.append( norm(b1, b2, b3) )
-
             if not bNorm:
                 print("BNorm plot empty (Cut line z = ", args.norm, ")")
 
-            fig4 =  plt.figure(4)
-            plt.plot(yTemp, bNorm)
-            plt.title('B field norm')
-            plt.grid(True)
-            plt.xlabel('y [m]')
-            plt.ylabel('|B| [T]')
+            if args.adiab:
+                k = calcAdiab(y, by, bx, bz)
+                nonAdiab = 1./ np.array(k)
+                nonAdiab = 1./ np.array(k)
+                plt.figure()
+                plt.plot(x[0:-2], k, label='k')
+                plt.xlabel('[m]')
+                plt.yscale('log')
+                plt.legend()
+                plt.grid()
+
+                plt.figure()
+                plt.plot(x[0:-2], nonAdiab, label='1/k')
+                plt.xlabel('[m]')
+                plt.legend()
+                plt.grid()
+
+            plt.figure()
+            plt.plot(x, bx, label=r'$B_x$')
+            plt.plot(x, by, label=r'$B_y$')
+            plt.plot(x, bz, label=r'$B_z$')
+            plt.plot(x, bNorm, label=r'$\Vert B \Vert$')
+            plt.ylabel('[Tesla]')
+            plt.xlabel('[m]')
+            plt.legend()
+            plt.grid()
 
     plt.show()
 
     return
+
+def calcAdiab(x, bx, by , bz):
+    # x -> direction of travel for the neutron
+    import numpy as np
+    bx = np.array(bx)
+    by = np.array(by)
+    bz = np.array(bz)
+    x = np.array(x)
+    gamma_n = 30* 10**6 # Hz/T
+    vn = 4              # m/s
+    Btotals = np.sqrt(bx**2 + by**2 + bz**2)
+    B1dotB2 = bx[0:-2]*bx[1:-1] + by[0:-2]*by[1:-1] + bz[0:-2]*bz[1:-1]
+    k = gamma_n*((Btotals[0:-2] + Btotals[1:-1])/2.)*np.abs(x[1:-1] - x[0:-2])/(vn*np.arccos(B1dotB2/(Btotals[0:-2]*Btotals[1:-1])))
+    return k
+
 
 def norm (x, y, z):
     #Finds norm of cartesian vector components

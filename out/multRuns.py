@@ -72,7 +72,7 @@ def main():
     ax.set_title('Polarization of neutrons at end')
 
     if (args.save):
-        plt.savefig("endPol.png")
+        plt.savefig("endPol_" + str(args.runs[0]) + "-" + str(args.runs[1]) + ".png")
     plt.show()
 
 
