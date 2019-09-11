@@ -9,6 +9,7 @@ def main():
     import argparse
 
     yNeutron = 1.83247172e8 / 6.28318530718 # s^-1 T^-1. For adiabatic parameter calculation
+    markersize = 1
     adiab = []
     Estart = []
 
@@ -54,26 +55,26 @@ def main():
     print("Plotting...")
     if (args.xz):
         fig = plt.figure()
-        plt.plot(df['x'], df['z'], ".",markersize=0.5)
+        plt.plot(df['x'], df['z'], ".",markersize=markersize)
         plt.grid(True)
         plt.xlabel('x [m]')
         plt.ylabel('z [m]')
 
         fig = plt.figure()
-        plt.plot(df['t'], df['x'], ".",markersize=0.5)
+        plt.plot(df['t'], df['x'], ".",markersize=markersize)
         plt.grid(True)
         plt.xlabel('t [s]')
         plt.ylabel('x [m]')
 
     if (args.yz):
         fig = plt.figure()
-        plt.plot(df['y'], df['z'], ".",markersize=0.5)
+        plt.plot(df['y'], df['z'], ".",markersize=markersize)
         plt.grid(True)
         plt.xlabel('y [m]')
         plt.ylabel('z [m]')
 
         fig = plt.figure()
-        plt.plot(df['t'], df['y'], ".",markersize=0.5)
+        plt.plot(df['t'], df['y'], ".",markersize=markersize)
         plt.grid(True)
         plt.xlabel('t [s]')
         plt.ylabel('y [m]')

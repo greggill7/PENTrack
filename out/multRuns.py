@@ -69,7 +69,6 @@ def main():
     ax.set_xlabel('Spin projection of S on B')
     ax.set_xlim([-1.005,1.005])
     ax.set_ylabel('Number of neutrons')
-    ax.set_title('Polarization of neutrons at end')
 
     if (args.save):
         plt.savefig("endPol_" + str(args.runs[0]) + "-" + str(args.runs[1]) + ".png")
