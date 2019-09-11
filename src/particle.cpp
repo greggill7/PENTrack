@@ -685,8 +685,8 @@ bool TParticle::CheckHit(const value_type x1, const state_type &y1, value_type &
 
   if (collfound){	// if there is a collision with a wall
     value_type xc1 = x1, xc2 = x2;
-//    for (auto c: colls)
-//      cout << x1 << " " << x2 - x1 << " " << c.first.distnormal << " " << c.first.s << " " << c.first.ID << endl;
+   // for (auto c: colls)
+   //   cout << x1 << " " << x2 - x1 << " " << c.first.distnormal << " " << c.first.s << " " << c.first.ID << endl;
     state_type yc1 = y1, yc2 = y2;
     if (iterate_collision(xc1, yc1, xc2, yc2, colls.begin()->first, stepper, geom)){
       if (DoStep(x1, y1, xc1, yc1, stepper, currentsolid, mc, geom)){

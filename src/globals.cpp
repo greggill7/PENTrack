@@ -12,7 +12,7 @@
 const long double pi = 3.1415926535897932384626L; ///< Pi
 const long double ele_e = 1.602176487E-19L; ///< elementary charge [C]
 const long double gravconst = 9.80665L; ///< g [m/s]
-// const long double gravconst = 0L; ///< g [m/s]
+// const long double gravconst = 0; ///< g [m/s]
 const long double boltzconst = 1.38064852E-23L/ele_e; /// Boltzmann's constant [ev/K] from http://physics.nist.gov/cgi-bin/cuu/Value?sigma
 const long double avogadroconst = 6.022140857E23L; /// Avogadro's constant [ mol^-1 ] from http://physics.nist.gov/cgi-bin/cuu/Value?na|search_for=avagadro%27s+number
 const long double conv = pi/180.L; ///< deg to rad conversion factor

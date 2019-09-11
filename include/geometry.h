@@ -27,6 +27,8 @@ struct material{
 	double SpinflipProb; ///< Probability for spin flip on reflection
 	double RMSRoughness; ///< RMS roughness of surface, for MicroRoughness model reflections
 	double CorrelLength; ///< Correlation length of surface roughness, for MicroRoughness model reflections
+	double LossPerBounce;	///< Chance for absorption upon contact with a surface
+	double MFPElastic;	///< Mean free path for elastic scattering within a bulk material
 };
 
 ///Read material properties, except name, from input stream
@@ -70,7 +72,7 @@ struct TGeometry{
 	public:
 		TTriangleMesh mesh; ///< kd-tree structure containing triangle meshes from STL-files
 		solid defaultsolid; ///< "vacuum", this solid's properties are used when the particle is not inside any other solid
-		
+
 		/**
 		 * Constructor, reads geometry configuration file, loads triangle meshes.
 		 *
@@ -90,7 +92,7 @@ struct TGeometry{
 		bool CheckSegment(const double y1[3], const double y2[3]) const{
 			return CGAL::do_intersect(mesh.GetBoundingBox(), CSegment(CPoint(y1[0], y1[1], y1[2]), CPoint(y2[0], y2[1], y2[2])));
 		};
-		
+
 
 		/**
 		 * Checks if line segment p1->p2 collides with a surface.
@@ -107,8 +109,8 @@ struct TGeometry{
 		 * @return Returns true if line segment collides with a surface
 		 */
 		bool GetCollisions(const double x1, const double p1[3], const double x2, const double p2[3], std::multimap<TCollision, bool> &colls) const;
-		
-			
+
+
 		/**
 		 * Get solids in which the point p lies
 		 *
@@ -133,9 +135,9 @@ struct TGeometry{
 
 		/**
 		 * Get solid with given ID
-		 * 
+		 *
 		 * @param ID ID
-		 * 
+		 *
 		 * @return Returns solid with given ID
 		 */
 		 solid GetSolid(const unsigned ID) const;

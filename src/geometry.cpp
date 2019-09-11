@@ -8,7 +8,8 @@
 using namespace std;
 
 std::istream& operator>>(std::istream &str, material &mat){
-	str >> mat.FermiReal >> mat.FermiImag >> mat.DiffProb >> mat.SpinflipProb >> mat.RMSRoughness >> mat.CorrelLength;
+	str >> mat.FermiReal >> mat.FermiImag >> mat.DiffProb >> mat.SpinflipProb
+				>> mat.RMSRoughness >> mat.CorrelLength >> mat.LossPerBounce >> mat.MFPElastic;
 	if (!str)
 		throw std::runtime_error((boost::format("Could not read material %s!") % mat.name).str());
 	if (mat.DiffProb != 0 && (mat.RMSRoughness != 0 || mat.CorrelLength != 0))
@@ -17,7 +18,8 @@ std::istream& operator>>(std::istream &str, material &mat){
 	return str;
 }
 std::ostream& operator<<(std::ostream &str, const material &mat){
-	str << mat.name << " " << mat.FermiReal << " " << mat.FermiImag << " " << mat.DiffProb << " " << mat.SpinflipProb << " " << mat.RMSRoughness << " " << mat.CorrelLength << "\n";
+	str << mat.name << " " << mat.FermiReal << " " << mat.FermiImag << " " << mat.DiffProb << " " << mat.SpinflipProb << " "
+	 			<< mat.RMSRoughness << " " << mat.CorrelLength << " " << mat.LossPerBounce << " " << mat.MFPElastic << "\n";
 	if (!str)
 		throw std::runtime_error((boost::format("Could not write material %s!") % mat.name).str());
 	return str;
@@ -68,9 +70,9 @@ TGeometry::TGeometry(TConfig &geometryin){
 		cout << "Loading materials from " << matpath << "\n";
 		matconf.ReadFromFile(matpath.native());
 	}
-	
+
 	vector<material> materials;
-	std::transform(matconf["MATERIALS"].begin(), matconf["MATERIALS"].end(), back_inserter(materials), 
+	std::transform(matconf["MATERIALS"].begin(), matconf["MATERIALS"].end(), back_inserter(materials),
 					[](const std::pair<std::string, std::string> &i){
 						material mat;
 						mat.name = i.first;
@@ -78,17 +80,17 @@ TGeometry::TGeometry(TConfig &geometryin){
 						return mat;
 					}
 	); // Read materials from config and add them to list
-	
+
 	for (auto sldparams : geometryin["GEOMETRY"]){
 		solid sld;
 		istringstream(sldparams.first) >> sld.ID;
 		istringstream(sldparams.second) >> sld;
-		
+
 		auto mat = std::find_if(materials.begin(), materials.end(), [&sld](const material &m){ return sld.mat.name == m.name; });
 		if (mat == materials.end())
 			throw std::runtime_error((boost::format("Material %s used but not defined!") % sld.mat.name).str());
 		sld.mat = *mat;
-		
+
 		if (sld.ID == 1){
 			sld.name = "default solid";
 			defaultsolid = sld;
@@ -98,7 +100,7 @@ TGeometry::TGeometry(TConfig &geometryin){
 			solids.push_back(sld);
 		}
 	}
-	
+
 	if (std::unique(solids.begin(), solids.end(), [](const solid s1, const solid s2){ return s1.ID == s2.ID; }) != solids.end()) // check if IDs of each solid are unique
 		throw std::runtime_error("You defined solids with identical ID! IDs have to be unique!");
 }
@@ -110,7 +112,7 @@ bool TGeometry::GetCollisions(const double x1, const double p1[3], const double 
 	for (auto it: c){
 		solid sld = GetSolid(it.ID);
 		double t = x1 + (x2 - x1)*it.s;
-		bool ignored =std::any_of(sld.ignoretimes.begin(), sld.ignoretimes.end(), 
+		bool ignored =std::any_of(sld.ignoretimes.begin(), sld.ignoretimes.end(),
 						[&t](const std::pair<double, double> &its){ return t >= its.first && t < its.second; }
 					); // check if collision time lies between any pair of ignore times
 		colls.emplace(it, ignored);

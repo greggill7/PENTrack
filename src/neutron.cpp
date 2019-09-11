@@ -46,7 +46,7 @@ void TNeutron::TransmitMR(const value_type x1, const state_type &y1, value_type 
 		std::cout << "Tried to use micro-roughness model in invalid energy regime. That should not happen!\n";
 		exit(-1);
 	}
-	
+
 	double Enormal = 0.5*m_n*vnormal*vnormal; // energy normal to reflection plane
 	double Estep = entering.mat.FermiReal*1e-9 - leaving.mat.FermiReal*1e-9;
 	double k1 = sqrt(Enormal); // wavenumber in first solid (use only real part for transmission!)
@@ -168,9 +168,9 @@ void TNeutron::OnHit(const value_type x1, const state_type &y1, value_type &x2, 
 	double Estep = entering.mat.FermiReal*1e-9 - leaving.mat.FermiReal*1e-9;
 
 	material mat = vnormal < 0 ? entering.mat : leaving.mat; // use material properties of the solid whose surface was hit
-	//material *mat = &entering->mat;
 
-//		cout << "Leaving " << leaving->ID << " Entering " << entering->ID << " Enormal = " << Enormal << " Estep = " << Estep;
+	// cout << "Leaving " << leaving.ID << " Entering " << entering.ID << " Enormal = " << Enormal << " Estep = " << Estep << "   ";
+	// cout << entering.mat.MFPElastic << "  ";
 
 	bool UseMRModel = MR::MRValid(&y1[3], normal, leaving, entering);
 	double MRreflprob = 0, MRtransprob = 0;
@@ -188,7 +188,13 @@ void TNeutron::OnHit(const value_type x1, const state_type &y1, value_type &x2, 
 		TransmitMR(x1, y1, x2, y2, normal, leaving, entering, mc);
 	}
 
-	else{
+	else if (prob < entering.mat.LossPerBounce) { // Chance for immediate absorption on surface
+		ID = ID_ABSORBED_ON_SURFACE;
+		printf(" Absorption (on surface) \n");
+	}
+
+	else{ // Reflection and transmission
+		prob = unidist(mc);
 		complex<double> k1 = sqrt(complex<double>(Enormal, -leaving.mat.FermiImag*1e-9)); // wavenumber in first solid
 		complex<double> k2 = sqrt(complex<double>(Enormal - Estep, -entering.mat.FermiImag*1e-9)); // wavenumber in second solid
 		double reflprob = norm((k1 - k2)/(k1 + k2)); // specular reflection probability
@@ -222,6 +228,7 @@ void TNeutron::OnHit(const value_type x1, const state_type &y1, value_type &x2, 
 
 			if (prob < MRreflprob + MRtransprob + absprob*(1 - MRreflprob - MRtransprob)){ // -> absorption on reflection, scale down absprob so MRreflprob + MRtransprob + absprob + reflprob = 1
 				ID = ID_ABSORBED_ON_SURFACE;
+				printf(" Absorption (on reflection) \n");
 			}
 			else{ // no absorption -> reflection
 				if (!UseMRModel && unidist(mc) < mat.DiffProb){
@@ -252,7 +259,21 @@ void TNeutron::OnStep(const value_type x1, const state_type &y1, value_type &x2,
 			x2 = x1 + abspath/l*(x2 - x1); // if absorbed, interpolate stopping time and position
 			stepper.calc_state(x2, y2);
 			ID = ID_ABSORBED_IN_MATERIAL;
-			printf("Absorption!\n");
+			printf(" Absorption (in material) \n");
+		}
+	}
+
+	// Isotropic elastic scattering within bulk material
+	if ((ID != ID_ABSORBED_IN_MATERIAL) && currentsolid.mat.MFPElastic > 0) {
+		double l = sqrt(pow(y2[0] - y1[0], 2) + pow(y2[1] - y1[1], 2) + pow(y2[2] - y1[2], 2)); // travelled length
+		std::uniform_real_distribution<double> unidist(0, 1);
+		if ( unidist(mc) < (1 - exp(-l / currentsolid.mat.MFPElastic) ) ) {
+			double theta = unidist(mc) * 2. * pi;
+			double phi = unidist(mc) * pi;
+			double vabs = sqrt(y2[3]*y2[3] + y2[4]*y2[4] + y2[5]*y2[5]);
+			y2[3] = vabs*cos(phi)*sin(theta);	// new velocity with respect to z-axis
+			y2[4] = vabs*sin(phi)*sin(theta);
+			y2[5] = vabs*cos(theta);
 		}
 	}
 }
