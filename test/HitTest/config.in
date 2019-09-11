@@ -8,9 +8,9 @@ secondaries 0
 
 
 [MATERIALS]
-#name		FermiReal [neV]		FermiImag [neV]		DiffuseReflectionProbability	SpinflipProbability	RMSroughness [m]	CorrelationLength [m]
-default		0			0			0				0	0	0
-Al		54.1			0.00756			0				1e-5	3.5e-9	25e-9
+#name		FermiReal [neV]		FermiImag [neV]		DiffuseReflectionProbability	SpinflipProbability	RMSroughness [m] CorrelationLength [m] AbsProb [0..1] MFPElastic [m]
+default		0			0			0				0	0	0 0 0
+Al		54.1			0.00756			0				1e-5	3.5e-9	25e-9 0 0
 
 
 [GEOMETRY]

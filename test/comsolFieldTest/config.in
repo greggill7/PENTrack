@@ -12,9 +12,9 @@ secondaries 0
 BCutPlane 0 1.0 -1.75  0 1.0 1.75  0 -1.5 -1.75  100 100
 
 [MATERIALS]
-#name		FermiReal [neV]		FermiImag [neV]		DiffuseReflectionProbability	SpinflipProbability	RMSroughness [m]	CorrelationLength [m]	UseMRmodel
-default		0			0			0				0			0			0			0
-perfect		1000			0			1				0			0			0			0
+#name		FermiReal [neV]		FermiImag [neV]		DiffuseReflectionProbability	SpinflipProbability	RMSroughness [m] CorrelationLength [m] AbsProb [0..1] MFPElastic [m]
+default		0			0			0				0			0			0			0  0
+perfect		1000			0			1				0			0			0			0  0
 
 [GEOMETRY]
 #ID	STLfile				material_name		ignore_times
