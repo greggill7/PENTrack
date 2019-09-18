@@ -210,7 +210,6 @@ TB0GradXY::TB0GradXY(const double _a1, const double _a2, const double _z0, const
 	xmax = _xmax; xmin = _xmin;
 	ymax = _ymax; ymin = _ymin;
 	zmax = _zmax; zmin = _zmin;
-
 }
 
 void TB0GradXY::BField(const double x, const double y, const double z, const double t, double B[3], double dBidxj[3][3]) const{
@@ -228,8 +227,8 @@ void TB0GradXY::BField(const double x, const double y, const double z, const dou
 			dBidxj[1][0] = Bscale * (-a1*y*y/4); //dBydx
 			dBidxj[1][1] = Bscale * (-(a1*x*y +a2) / 2); //dBydy
 			dBidxj[1][2] = 0; //dBydz
-			dBidxj[2][0] = a1*y*z; //dBzdx
-			dBidxj[2][1] = a1*x*z; //dBzdy
+			dBidxj[2][0] = Bscale * a1*y*z; //dBzdx
+			dBidxj[2][1] = Bscale * a1*x*z; //dBzdy
 			dBidxj[2][2] = Bscale * (a1*x*y + a2); //dBzdz
 		}
 	} else {
@@ -246,6 +245,54 @@ void TB0GradXY::BField(const double x, const double y, const double z, const dou
 
 
 int TB0GradXY::withinBounds(const double x, const double y, const double z) const{
+	return ((x >= this->xmin) and (x <= this->xmax) and (y >= this->ymin)
+					and (y <= this->ymax)	and (z >= this->zmin) and (z <= this->zmax));
+}
+
+
+//TB0_XY constructor
+TB0_XY::TB0_XY(const double _a1, const double _z0, const double _xmax, const double _xmin, const double _ymax,
+									const double _ymin, const double _zmax, const double _zmin, const std::string &Bscale)
+									: TField(Bscale, "0") {
+	a1 = _a1; z0 = _z0;
+	xmax = _xmax; xmin = _xmin;
+	ymax = _ymax; ymin = _ymin;
+	zmax = _zmax; zmin = _zmin;
+}
+
+void TB0_XY::BField(const double x, const double y, const double z, const double t, double B[3], double dBidxj[3][3]) const{
+
+	double Bscale = BScaling(t);	// Time dependent scaling
+
+	if (withinBounds(x, y, z) && (Bscale != 0)) {
+		B[0] = Bscale * (a1 * y * z); //Bx contribution
+		B[1] = Bscale * (a1 * x * z); //By contribution
+		B[2] = Bscale * (a1 * x * y + z0); //Bz contribution
+		if (dBidxj != NULL){
+			dBidxj[0][0] = 0; // dBxdx
+			dBidxj[0][1] = Bscale * (a1 * z); //dBxdy
+			dBidxj[0][2] = Bscale * (a1 * y); //dBxdz
+			dBidxj[1][0] = Bscale * (a1 * z); //dBydx
+			dBidxj[1][1] = 0; //dBydy
+			dBidxj[1][2] = Bscale * (a1 * x); //dBydz
+			dBidxj[2][0] = Bscale * (a1 * y); //dBzdx
+			dBidxj[2][1] = Bscale * (a1 * x); //dBzdy
+			dBidxj[2][2] = 0; //dBzdz
+		}
+	} else {
+		//Field is 0 outside of bounds
+		for (int i = 0; i < 3; i++){
+			B[i] = 0;
+			if (dBidxj != NULL){
+				for (int j = 0; j < 3; j++)
+					dBidxj[i][j] = 0;
+			}
+		}
+	}
+}
+
+
+int TB0_XY::withinBounds(const double x, const double y, const double z) const{
 	return ((x >= this->xmin) and (x <= this->xmax) and (y >= this->ymin)
 					and (y <= this->ymax)	and (z >= this->zmin) and (z <= this->zmax));
 }

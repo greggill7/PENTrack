@@ -96,6 +96,13 @@ TFieldManager::TFieldManager(TConfig &conf){
 				f = new TB0GradXY(p1, p2, p3, xma, xmi, yma, ymi, zma, zmi, Bscale);
 		}
 
+		else if (type == "B0_XY") {
+			ss >> p1 >> p2 >> xma >> xmi >> yma >> ymi >> zma >> zmi >> Bscale;
+
+			if (ss)
+				f = new TB0_XY(p1, p2, xma, xmi, yma, ymi, zma, zmi, Bscale);
+		}
+
 		else if (type == "EDM_AC_B1Field") {
 			ss >> p1 >> p2 >> p3 >> p4 >> p5 >> p6 >> p7 >> freq >> time1 >> time2 >> shift >> bW >> xma >> xmi >> yma >> ymi >> zma >> zmi >> Bscale;
 
