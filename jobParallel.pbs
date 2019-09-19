@@ -1,0 +1,22 @@
+#!/bin/bash
+# Submits multiple pentrack jobs on the IU Carbonate cluster
+# Usage: qsub jobParallel.pbs
+
+#PBS -l nodes=1:ppn=1,walltime=01:00:00
+#PBS -l vmem=1gb
+#PBS -t 0-1000
+#PBS -N PENTrack
+####PBS -e /N/u/dkwong/Carbonate/PENTrack/out/error.txt
+#PBS -e /N/dc2/scratch/dkwong/error.txt
+####PBS -o /N/u/dkwong/Carbonate/PENTrack/out/output.txt
+#PBS -o /N/dc2/scratch/dkwong/output.txt
+#### For getting emails: PBS -M yourName@email.com #for receiving emails when certain tasks are complete (specified by PBS -m option): #PBS -m be #emails when the job is aborted(a),begins execution(b), is terminate(e)
+####PBS -M dkwong@iu.edu
+####PBS -m abe
+cd $PBS_O_WORKDIR
+echo "Current working directory is `pwd`"
+echo $PBS_JOBNAME
+echo "Starting run at: `date`"
+./PENTrack ${PBS_ARRAYID} "./in/config.in" "/N/dc2/scratch/dkwong/"
+#also put log files .o / .e in a subfolder in same output folder
+echo "Program diffuse finished with exit code $? at: `date`"

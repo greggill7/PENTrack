@@ -61,7 +61,8 @@ def main():
                     xTemp.append(x0)
                     bNorm.append( norm(b1, b2, b3) )
             if not bNorm:
-                print("BNorm plot empty (Cut line z = ", args.norm, ")")
+                print("Error: BNorm plot empty (Cut line z = ", args.norm, ")")
+                return
 
             if args.adiab:
                 k = calcAdiab(x, bx, by, bz)

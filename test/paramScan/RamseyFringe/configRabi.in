@@ -1,0 +1,89 @@
+# Rabi sequence with neutrons starting in chamber
+[GLOBAL]
+simtype 1  # Particle simulation  = 1
+simcount 1000 # Number neutrons
+simtime 10   # seconds
+
+secondaries 0
+
+#cut through B-field (simtype == 4) (x1 y1 z1  x2 y2 z2  x3 y3 z3 num1 num2)
+#define cut plane by three points and number of sample points in direction 1->2 and 1->3
+
+BCutPlane 0 -2 -0.087  0 -2 -0.167   0 0 -0.087  150 150
+
+[MATERIALS]
+#name		FermiReal [neV]		FermiImag [neV]		DiffuseReflectionProbability	SpinflipProbability	RMSroughness [m] CorrelationLength [m] AbsProb [0..1] MFPElastic [m]
+default		0 0 0 0 0 0 0 0
+perfect		1000 0 0 0 0 0 0 0
+PE        -8.6553 0.492 0.5 0 0 0 0 0
+
+[GEOMETRY]
+#ID	STLfile				material_name		ignore_times
+1	ignored				  default
+2	pipeAndChamber.stl	  perfect
+3   valve.stl             perfect
+
+
+[SOURCE]
+sourcemode boxvolume
+#			x_min	x_max	y_min	y_max	z_min	z_max	(boxvolume)
+parameters	-0.05    0.05   -0.05    0.05	0.01	0.05
+
+particle	neutron
+
+ActiveTime 0
+PhaseSpaceWeighting 0
+
+Emin 0e-9
+Emax 200e-9
+spectrum 1
+
+phi_v_min 0	    # min. azimuth angle of velocity [Degrees]
+phi_v_max 360		# max. azimuth angle of velocity   [Degrees]
+phi_v 1				# differential initial distribution of azimuth angle of velocity - volume source only!
+
+theta_v_min 0		# min. polar angle of velocity    [Degrees]
+theta_v_max 180	# max. polar angle of velocity      [Degrees]
+theta_v 1		# differential initial distribution of polar angle of velocity - volume source only!
+
+polarization 1		# 1: low-field-seeker (spin up), -1: high-field-seeker, 0: random
+
+[FIELDS]
+# COMSOLfield 	filename           BFieldScale	BoundaryWidth
+1 COMSOL        storageFieldFlipped_noSTS.txt   1            0
+
+#EDMStaticB0GradZField   edmB0xoff edmB0yoff edmB0zoff pol_ang azm_ang edmB0z0 edmdB0z0dz BoundaryWidth xmax    xmin    ymax    ymin    zmax    zmin scale
+2 EDMStaticB0GradZField 0 0 0 90 0 4E-9 0 0 0.3 -0.3 0.3 -0.3 0.15 0 (t<1)?0:(t<9.572)?sin(PARAM*t):0
+
+[PARTICLES]
+tau 1
+tmax 9e99
+lmax 9e99
+
+endlog 1
+tracklog 0
+hitlog 0
+snapshotlog 0
+spinlog 0
+snapshots 1 2 3 4 5 6 7 8 9 10
+trackloginterval 5e-3
+spinloginterval 5e-3
+
+spintimes 0 1000
+Bmax 0.1    # do spin tracking when absolute magnetic field is below this value [T]
+flipspin 0
+interpolatefields 1
+
+
+[neutron]			# set options for individual particle types, overwrites above settings
+tau 0
+
+[proton]
+tmax 3e-3
+
+[electron]
+tmax 1e-5
+
+[mercury]
+
+[xenon]
