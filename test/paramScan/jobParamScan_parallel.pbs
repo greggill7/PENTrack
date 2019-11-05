@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -l walltime=20:00:00
+#PBS -l nodes=1:ppn=4
+#PBS -l vmem=4gb
+#PBS -N PARAM-jobsJOB_START-JOB_END
+#PBS -e /N/dc2/scratch/dkwong/error.txt-JOB_START-JOB_END
+#PBS -o /N/dc2/scratch/dkwong/output.txt-JOB_START-JOB_END
+cd $PBS_O_WORKDIR
+echo "Current working directory is `pwd`"
+echo $PBS_JOBNAME
+echo "Starting run at: `date`"
+python paramSweep_parallel.py --run --jobStart JOB_START --jobEnd JOB_END --configFile CONFIG_FILE
+echo "Program diffuse finished with exit code $? at: `date`"

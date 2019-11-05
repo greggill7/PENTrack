@@ -9,7 +9,6 @@ def main():
     import argparse
 
     yNeutron = 1.83247172e8 / 6.28318530718 # s^-1 T^-1. For adiabatic parameter calculation
-    nbins = 200                             # number histogram bins
     adiab = []
 
     parser = argparse.ArgumentParser(description="Plot everything related to spin.out files")

@@ -267,6 +267,7 @@ void TNeutron::OnStep(const value_type x1, const state_type &y1, value_type &x2,
 	if ((ID != ID_ABSORBED_IN_MATERIAL) && currentsolid.mat.MFPElastic > 0) {
 		double l = sqrt(pow(y2[0] - y1[0], 2) + pow(y2[1] - y1[1], 2) + pow(y2[2] - y1[2], 2)); // travelled length
 		std::uniform_real_distribution<double> unidist(0, 1);
+		// std::cout << " " << l << " ";
 		if ( unidist(mc) < (1 - exp(-l / currentsolid.mat.MFPElastic) ) ) {
 			double theta = unidist(mc) * 2. * pi;
 			double phi = unidist(mc) * pi;

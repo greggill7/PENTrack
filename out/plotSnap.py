@@ -6,12 +6,12 @@ def main():
     import argparse
     import matplotlib.pyplot as plt
 
-    nbins = 200
     time = []
     endProj = []    # 2d array (# of time elements by # particles)
 
     parser = argparse.ArgumentParser(description='Makes plots related to neutronsnapshot.out')
     parser.add_argument("-f", "--file", default='000000000000neutronsnapshot.out', type=str, help = "Filename (default 000000000000neutronsnapshot.out)")
+    parser.add_argument("-nbins", "--nbins", type=int, help = "Number of bins in histogram (default 200)", default=200)
     args = parser.parse_args()
 
     print("Reminder: Use --help or -h to see optional arguments")
@@ -45,7 +45,7 @@ def main():
 
     for end, t in zip(endProj, time):
         fig, ax = plt.subplots()
-        ax.hist(end, range = [-1,1], bins = nbins)
+        ax.hist(end, range = [-1,1], bins = args.nbins)
         ax.set_xlabel('Spin projection of S on B')
         ax.set_ylabel('Number of neutrons')
         ax.set_title('Polarization at t = '+ str(t) + "[s]")

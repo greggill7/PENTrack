@@ -1,7 +1,7 @@
 [GLOBAL]
 simtype 1  # Particle simulation  = 1
 simcount 10000 # Number neutrons
-simtime 10   # seconds
+simtime 50   # seconds
 
 secondaries 0
 
@@ -12,51 +12,47 @@ BCutPlane -1 0 0  -1 0 0   1 0 0  1 150
 [MATERIALS]
 #name		FermiReal [neV]		FermiImag [neV]		DiffuseReflectionProbability	SpinflipProbability	RMSroughness [m] CorrelationLength [m] AbsProb [0..1] MFPElastic [m]
 default		0 0 0 0 0 0 0 0
-perfect		1000 0 0.05 0 0 0 0 0
+perfect		1000 0 0 0 0 0 0 0
 absorber    -1 10 0 0 0 0 1 0
-NiPh          213.5 0.023 0.05 0 0 0 1.3E-4 0
-Al		54.1 0.00281 0.2 0 0	0 0 20 # https://doi.org/10.1016/j.nima.2009.06.047
+NiDepol     213.5 0.023 0.05 1 0 0 1.3E-4 0         # NiPh with higher chance of depolarization
+NiPh        213.5 0.023 0.05 5E-6 0 0 1.3E-4 0
+Al		    54.1 0.00281 0.2 0 0	0 0 0.01           # Using fictional MFP
 
 [GEOMETRY]
 #ID	STLfile				material_name		ignore_times
-1	ignored				  default
-2   pipe.stl              NiPh
-3   startCap.stl           absorber
-4   endCap.stl           absorber
-#5 window.stl          Al
+1	ignored			       default
+2   upstream.stl           NiDepol
+3   downstream.stl         NiPh
+4   startCap.stl           NiDepol
+5   endCap.stl             absorber
+6   window.stl             Al
 
 [SOURCE]
 sourcemode STLvolume
 STLfile		source.stl
 
 particle	neutron
-ActiveTime 0
+ActiveTime  0
 PhaseSpaceWeighting 0
 
 Emin 1e-9
-Emax 500e-9
+Emax 220e-9
 spectrum x
 
-phi_v_min 0	    # min. azimuth angle of velocity [Degrees]
-phi_v_max 180		# max. azimuth angle of velocity   [Degrees]
-phi_v 1				# differential initial distribution of azimuth angle of velocity - volume source only!
+phi_v_min 270	    # min. azimuth angle of velocity [Degrees]
+phi_v_max 450	# max. azimuth angle of velocity   [Degrees]
+phi_v cos(x)	# differential initial distribution of azimuth angle of velocity - volume source only!
 
-theta_v_min 1		# min. polar angle of velocity    [Degrees]
-theta_v_max 179	# max. polar angle of velocity      [Degrees]
-theta_v 1		# differential initial distribution of polar angle of velocity - volume source only!
+theta_v_min 0		# min. polar angle of velocity    [Degrees]
+theta_v_max 180	# max. polar angle of velocity      [Degrees]
+theta_v sin(x)		# differential initial distribution of polar angle of velocity - volume source only!
 
 polarization 0		# 1: low-field-seeker, -1: high-field-seeker, 0: random
 
 [FIELDS]
-# LinearFieldZ is described by:
-# B_z = a1*x + a2
-# a1 = [T/m] and a2 = [T]
-# Field is turned off outside of the xyz min/max boundaries specified [meters]
-## LinearFieldZ a1      a2     xmax  xmin  ymax  ymin  zmax  zmin scale
-#1 LinearFieldZ  2.5       0      2.1     0     1     -1     1     -1   1
-
 # COMSOLfield 	filename           BFieldScale	BoundaryWidth
 1 COMSOL        ppmComsol.txt      PARAM            0
+#1 COMSOL        ppmComsol.txt       1            0
 
 #EDMStaticB0GradZField   edmB0xoff edmB0yoff edmB0zoff pol_ang azm_ang edmB0z0 edmdB0z0dz BoundaryWidth xmax    xmin    ymax    ymin    zmax    zmin scale
 2 EDMStaticB0GradZField     0       0           0       90      0       5E-5    0           0               2   -2      1       -1      1       -1      1
@@ -72,7 +68,7 @@ hitlog 0
 snapshotlog 0
 spinlog 0
 snapshots 1 2 3 4 5 6 7 8 9 10
-trackloginterval 5e-3
+trackloginterval 1e-2
 spinloginterval 5e-3
 
 spintimes 0
