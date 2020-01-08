@@ -415,8 +415,9 @@ double TParticle::IntegrateSpin(state_type &spin, const dense_stepper_type &step
 
 			if (t >= nextspinlog){
 				// PrintSpin(t, spin, stepper, field);
-				stepper.calc_state(t,y1);
-				PrintSpin(t, y1, spin, stepper, field);
+				state_type y(STATE_VARIABLES);
+				stepper.calc_state(t,y);
+				PrintSpin(t, y, spin, stepper, field);
 				nextspinlog += spinloginterval;
 			}
 			if (t >= x2)

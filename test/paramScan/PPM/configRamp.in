@@ -1,7 +1,7 @@
 [GLOBAL]
 simtype 1  # Particle simulation  = 1
 simcount 10000 # Number neutrons
-simtime 50   # seconds
+simtime 15   # seconds
 
 secondaries 0
 
@@ -16,7 +16,8 @@ perfect		1000 0 0 0 0 0 0 0
 absorber    -1 10 0 0 0 0 1 0
 NiDepol     213.5 0.023 0.05 1 0 0 1.3E-4 0         # NiPh with higher chance of depolarization
 NiPh        213.5 0.023 0.05 5E-6 0 0 1.3E-4 0
-Al		    54.1 0.00281 0.2 0 0	0 0 0.01           # Using fictional MFP
+#Al		    54.1 0.00281 0.2 0 0	0 0 0.01
+Al		    54.1 0.008 0.2 0 0	0 0 0.01           # Using fictional MFP
 
 [GEOMETRY]
 #ID	STLfile				material_name		ignore_times

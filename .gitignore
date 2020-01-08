@@ -18,6 +18,7 @@ PENTrack
 # ignore output files
 *.out
 *.root
+*.hdf
 doc/
 cgal/
 

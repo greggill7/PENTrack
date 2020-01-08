@@ -23,7 +23,7 @@ D_ROUND = 3     #Decimal places to round scan steps to
 JOB_NUM_START = 3000    # What job number at which to start labeling output files
 JOBS_PER_STEP = 10      # Number of jobs per scan step
 PARALLEL_PER_JOB = 10   # Number of PENTrack instances per job
-PBS_TEMPLATE = 'jobParamScan_parallel.pbs'     # torque PBS script template file
+PBS_TEMPLATE = 'in/jobParamScan_parallel.pbs'     # torque PBS script template file
 CONFIG_TEMPLATE = 'in/configRamp.in'    # PENTrack config file
 OUTPUT_DIRECTORY = '/N/dc2/scratch/dkwong/' # Where to output PENTrack files
 

@@ -168,7 +168,7 @@ The endlog keeps track of the starting and end parameters of the simulated parti
 - stopID: code which identifies why the particle was stopped (defined in globals.h)
   - 0: not categorized
   - -1: did not finish (reached max. simulation time)
-  - -2: hit outer poundaries
+  - -2: hit outer boundaries
   - -3: produced error during trajectory integration
   - -4: decayed
   - -5: found no initial position
@@ -253,14 +253,14 @@ Use [--help] for optional arguments
 
 Plots the vector field from BFCut.out. Use [--help] for optional arguments
 
-### plotSnap.py
-
-Makes and saves multiple images quantifying polarization over time of a population
-of neutrons in neutronsnapshot.out files. Use [--help] for optional arguments
-
 ### plotSpin.py
 
 Plots a variety of things using neutronspin.out files. Use [--help] for
+optional arguments.
+
+### plotTrack.py
+
+Plots a variety of things using neutrontrack.out files. Use [--help] for
 optional arguments.
 
 Helper Scripts
@@ -270,11 +270,6 @@ Helper Scripts
 
 For a single PENTrack job on a single core, modify the parameters on job.pbs
 accordingly (e.g. output folder names, etc), and submit using $ qsub job.pbs
-
-### Merging output files into ROOT trees
-
-merge_all.c: A [ROOT](http://root.cern.ch) script that writes all out-files (or those, whose filenames match some pattern) into a single ROOT file containing trees for each log- and particle-type.
-merge.py: Python script merging all files given as parameters into a ROOT tree, similar to merge_all.c.
 
 ### preRunCheck.sh
 

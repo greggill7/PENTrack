@@ -12,16 +12,19 @@ import matplotlib.pyplot as plt
 
 def main():
     ###### arguments #######
-    folder = '/N/dc2/scratch/dkwong/'
+    folder = '/N/slate/dkwong/'
     # folder = '/mnt/c/Users/Doug/Downloads'
     joblist = 'joblist.out'
     # joblist = '/mnt/c/Users/Doug/Downloads/joblist.out'
-    query = 'xend > 0.99'   # For no query, write 'all'
-    E_HIST_ON = True        # Plots E start histogram for each B field
-    T_HIST_ON = True        # Plots t end histogram for each B field
+    query = 'xend > 0.99 and polend==1'   # For no query, write 'all'
+    xendQuery = 'stopID==1' # For xend query
+    E_HIST_ON = False        # Plots E start and end histogram for each B field
+    T_HIST_ON = False        # Plots t end histogram for each B field
+    XEND_HIST_ON = True     # Plots x end of neutrons absorbed in the NiPh pipe
     nbins = 250
-    histRange = [0,500E-9]  # neV
-    timeRange = [0,50]      # seconds
+    histRange = [0,250E-9]  # neV
+    timeRange = [0,20]      # seconds
+    xEndRange = [-1, 1]     # meters
     ########################
 
     if query != "all":
@@ -31,12 +34,13 @@ def main():
     print('Reading ', joblist)
     startRun, endRun, param = np.genfromtxt(joblist, unpack=True, comments='#')
 
-    # Scale to 6 Telsa ramp
-    param = np.array(param) * 6
+    # Scale to 5 Telsa ramp
+    param = np.array(param) * 5
     neutronCount = []
     Estart = []
+    Eend = []
     tend = []
-    binEdges =[]
+    xend = []
 
     if (folder[-1] != '/'):
         folder = folder + '/'
@@ -46,8 +50,10 @@ def main():
         runNum = np.arange(int(start),int(end)+1)
         total = 0
         totalBeforeQuery = 0
-        histTotal = np.zeros(nbins)
-        timeTotal = np.zeros( int(timeRange[1]-timeRange[0]) )
+        EstartTotal = np.zeros(nbins)
+        EendTotal = np.zeros(nbins)
+        timeTotal = np.zeros( int(timeRange[1]-timeRange[0])*2 )
+        xendTotal = np.zeros(nbins)
         missedRuns = []
 
         for i in runNum:
@@ -61,29 +67,41 @@ def main():
                 # 'xend', 'yend', 'zend', 'Sxend', 'Syend', 'Szend','Eend', 'BxEnd', 'ByEnd', 'BzEnd']
 
                 totalBeforeQuery += len(df.index)
-                if query != "all":
-                    df = df.query(query)
+
             except:
                 missedRuns.append(i)
                 continue
 
+            # Pipe exit histogram
+            histTemp, xEndEdges = np.histogram(df.query(xendQuery)['xend'], range=xEndRange, bins=nbins)
+            xendTotal += histTemp
+
+            if query != "all":
+                df = df.query(query)
+
             total += len(df.index)
-            histTemp, binEdges = np.histogram(df['Estart'],range = histRange, bins = nbins)
-            histTotal += histTemp
+            histTemp, eStartEdges = np.histogram(df['Estart'],range = histRange, bins = nbins)
+            EstartTotal += histTemp
+
+            histTemp, eEndEdges = np.histogram(df['Eend'],range = histRange, bins = nbins)
+            EendTotal += histTemp
 
             # Time histogram
-            timeTemp, timeEdges = np.histogram(df['tend'], range = timeRange, bins=int(timeRange[1]-timeRange[0]) )
+            timeTemp, timeEdges = np.histogram(df['tend'], range = timeRange, bins=int(timeRange[1]-timeRange[0])*2 )
             timeTotal += timeTemp
+
+
         #ENDFOR
 
         print('okay!')
         print('Total neutrons simulated: ', totalBeforeQuery)
         print('Neutrons after query: ', total)
-        print('Neutrons in hist: ', np.sum(histTotal))
         print('Error reading run numbers-- ', missedRuns)
         neutronCount.append( float(total)/float(totalBeforeQuery) )
-        Estart.append(histTotal)
+        Estart.append(EstartTotal)
+        Eend.append(EendTotal)
         tend.append(timeTotal)
+        xend.append(xendTotal)
     #ENDFOR
 
     print('\nPlotting...',end='')
@@ -91,28 +109,59 @@ def main():
     plt.plot(param, np.divide(neutronCount,neutronCount[0]) ,marker='.')
     plt.xlabel('B [T]')
     plt.ylabel('Neutron count')
-    plt.title('PPM ramp')
+    plt.title('PPM flux')
     plt.grid()
     plt.savefig('PPM_ramp.png')
     plt.close()
 
-    for p, E, t in zip(param, Estart, tend):
+    xsum = []
+
+    for p, Es, Ee, t, x in zip(param, Estart, Eend, tend, xend):
         if E_HIST_ON:
             fig, ax = plt.subplots()
-            ax.bar(binEdges[1:], E, width=(histRange[1]-histRange[0])/float(nbins))
-            ax.set_xlabel('E [neV]')
+            ax.bar(eStartEdges[1:], Es, width=(histRange[1]-histRange[0])/float(nbins))
+            ax.set_xlabel('E start [neV]')
             ax.set_xlim([histRange[0] , histRange[1]])
             ax.set_ylabel('Number of neutrons')
             plt.savefig('Estart_B=' + str(np.round(p, decimals=3)) + '.png')
             plt.close()
+
+            fig, ax = plt.subplots()
+            ax.bar(eEndEdges[1:], Ee, width=(histRange[1]-histRange[0])/float(nbins))
+            ax.set_xlabel('E end [neV]')
+            ax.set_xlim([histRange[0] , histRange[1]])
+            ax.set_ylabel('Number of neutrons')
+            plt.savefig('Eend_B=' + str(np.round(p, decimals=3)) + '.png')
+            plt.close()
+
         if T_HIST_ON:
             fig, ax = plt.subplots()
-            ax.bar(timeEdges[1:], t, width=(timeRange[1]-timeRange[0])/float(int(timeRange[1]-timeRange[0])))
+            ax.bar(timeEdges[1:], t, width=(timeRange[1]-timeRange[0])/float(int(timeRange[1]-timeRange[0])*2))
             ax.set_xlabel('time [sec]')
             ax.set_xlim([timeRange[0] , timeRange[1]])
             ax.set_ylabel('Number of neutrons')
             plt.savefig('t_B=' + str(np.round(p, decimals=3)) + '.png')
             plt.close()
+
+        if XEND_HIST_ON:
+            xsum.append( np.sum(x) )
+            fig, ax = plt.subplots()
+            ax.bar(xEndEdges[1:], x, width=(xEndRange[1]-xEndRange[0])/float(nbins))
+            ax.set_xlabel('xend [m]')
+            ax.set_xlim([xEndRange[0] , xEndRange[1]])
+            ax.set_ylabel('Number of neutrons')
+            plt.savefig('xend_B=' + str(np.round(p, decimals=3)) + '.png')
+            plt.close()
+
+    if XEND_HIST_ON:
+        plt.figure()
+        plt.plot(param, xsum ,marker='.')
+        plt.xlabel('B [T]')
+        plt.ylabel('Neutron count')
+        plt.title('Integrated neutrons lost in pipe')
+        plt.grid()
+        plt.savefig('xend_ramp.png')
+        plt.close()
 
     print('Done!')
 

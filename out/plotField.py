@@ -16,21 +16,21 @@ def main():
     yTemp = []
 
     parser = argparse.ArgumentParser(description='Plots BFcut.out [--help]')
-    parser.add_argument("-f", "--file", type=str, default='BFCut.out', help = "Filename (default BFCut.out)")
-    parser.add_argument("-xz", "--xzPlane", action="store_true", help = "Plots BFCut along xz plane")
-    parser.add_argument("-yz", "--yzPlane", action="store_true", help = "Plots BFCut along yz plane")
-    parser.add_argument("-n", "--norm", type=float, nargs=1, help = "Plots the flux norm along an arc length, fixed z")
-    parser.add_argument("-a", "--adiab", action="store_true", help = "If --norm enabled, plots adiabaticity")
+    parser.add_argument('-f', '--file', type=str, default='BFCut.out', help = 'Filename (default BFCut.out)')
+    parser.add_argument('-xz', '--xzPlane', action='store_true', help = 'Plots BFCut along xz plane')
+    parser.add_argument('-yz', '--yzPlane', action='store_true', help = 'Plots BFCut along yz plane')
+    parser.add_argument('-n', '--norm', type=float, nargs=1, help = 'Plots the flux norm along an arc length, fixed z')
+    parser.add_argument('-a', '--adiab', action='store_true', help = 'If --norm enabled, plots adiabaticity')
     args = parser.parse_args()
 
-    print("Reminder: Use --help or -h to see optional arguments")
+    print('Reminder: Use --help or -h to see optional arguments')
     if (args.xzPlane == False and args.yzPlane == False):
-        print("Please specify which plane you'd like to plot [--help]")
+        print('Please specify which plane you'd like to plot [--help]')
         return
 
     # Read in files
     try:
-        with open (args.file,"r") as f1:
+        with open (args.file,'r') as f1:
             lines = f1.readlines()[1:]
             for num, line in enumerate(lines):
                 text = line.split(' ')
@@ -43,11 +43,11 @@ def main():
                     by.append(float( text[4]) )
                     bz.append(float( text[8]) )
     except IOError:
-        print("Error reading ", args.file)
+        print('Error reading ', args.file)
         return
 
     if (len(x) != len(bx)):
-        print("Error: not an equal number of xyz coords and b field values")
+        print('Error: not an equal number of xyz coords and b field values')
         return
 
     if args.xzPlane:
@@ -61,7 +61,7 @@ def main():
                     xTemp.append(x0)
                     bNorm.append( norm(b1, b2, b3) )
             if not bNorm:
-                print("Error: BNorm plot empty (Cut line z = ", args.norm, ")")
+                print('Error: BNorm plot empty (Cut line z = ', args.norm, ')')
                 return
 
             if args.adiab:
@@ -103,7 +103,7 @@ def main():
                     yTemp.append(y0)
                     bNorm.append( norm(b1, b2, b3) )
             if not bNorm:
-                print("BNorm plot empty (Cut line z = ", args.norm, ")")
+                print('BNorm plot empty (Cut line z = ', args.norm, ')')
 
             if args.adiab:
                 k = calcAdiab(y, by, bx, bz)
