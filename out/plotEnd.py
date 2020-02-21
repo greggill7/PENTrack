@@ -8,6 +8,7 @@ def main():
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
     import h5py
+    from scipy.optimize import curve_fit
 
     parser = argparse.ArgumentParser(description='Plots neutronend.out histograms')
     parser.add_argument('-f', '--file', type=str, default='000000000000neutronend.out', help = 'Filename (default 000000000000neutronend.out)')
@@ -124,31 +125,51 @@ def main():
         # ax.set_ylabel('Number of neutrons')
         #
         # fig, ax = plt.subplots()
-        # histTotal, binEdges = np.histogram(vtheta, bins = args.nbins)
-        # ax.bar(binEdges[1:]-0.005,histTotal,width=0.02)
+        # histTotal, binEdges = np.histogram(vtheta, bins=args.nbins)
+        # centers = (binEdges[:-1] + binEdges[1:])/2
+        # ax.bar(centers,histTotal, width=(binEdges[1]-binEdges[0]))
         # ax.set_xlabel(r'$v_\theta$ distribution')
         # ax.set_ylabel('Number of neutrons')
 
     if (args.tend):
-        df.hist('tend', bins = args.nbins, grid=False)
+        fig = plt.figure()
+        histTotal, binEdges = np.histogram(df['tend'], bins=args.nbins)
+        centers = (binEdges[:-1] + binEdges[1:])/2
+        plt.bar(centers,histTotal, width=(binEdges[1]-binEdges[0]))
         plt.ylabel('Number of neutrons')
         plt.xlabel('tend [s]')
+        plt.title('tend')
 
-        if (args.save):
-            plt.savefig('tend.png')
+        fig = plt.figure()
+        neutronsLeft = [ len(df.index) - histTotal[0] ]
+        for i, bin in enumerate(histTotal[1:]):
+            neutronsLeft.append( neutronsLeft[i] - bin )
+
+        plt.bar(centers,neutronsLeft, width=(binEdges[1]-binEdges[0]))
+        plt.ylabel('Number of neutrons')
+        plt.xlabel('t [s]')
+        plt.title('Neutrons left')
+
+        popt, pcov = curve_fit(func, centers[:-1], neutronsLeft[:-1], p0=[len(df.index), 100, 100])
+        print("\n### Neutron lifetime ###")
+        print("a * np.exp(-x/b) + c")
+        print(f"Fit params:  {popt}")
+        print("+/-             [",np.sqrt(pcov[0][0]),", ", np.sqrt(pcov[1][1]),", ", np.sqrt(pcov[2][2]),"]")
+        plt.plot(centers, func(centers, *popt), color='C1', linestyle='--', label='Fit')
+        plt.legend()
 
     if (args.stopID):
-        print('End status of neutrons:')
-        print(len(df.query('stopID == 0').index), '\tnot categorized')
-        print(len(df.query('stopID == -1').index), '\tdid not finish')
-        print(len(df.query('stopID == -2').index), '\thit outer boundaries')
-        print(len(df.query('stopID == -3').index), '\tproduced error during trajectory integration')
-        print(len(df.query('stopID == -4').index), '\tdecayed')
-        print(len(df.query('stopID == -5').index), '\tfound no initial position')
-        print(len(df.query('stopID == -6').index), '\tproduced error during geometry collision detection')
-        print(len(df.query('stopID == -7').index), '\tproduced error during tracking of crossed material boundaries')
-        print(len(df.query('stopID == 1').index), '\tabsorbed in bulk material (see solidend)')
-        print(len(df.query('stopID == 2').index), '\tabsorbed on surface (see solidend)')
+        print('End status of neutrons [stopID]:')
+        print(len(df.query('stopID == 0').index), '\tnot categorized [0]')
+        print(len(df.query('stopID == -1').index), '\tdid not finish [-1]')
+        print(len(df.query('stopID == -2').index), '\thit outer boundaries [-2]')
+        print(len(df.query('stopID == -3').index), '\tproduced error during trajectory integration [-3]')
+        print(len(df.query('stopID == -4').index), '\tdecayed [-4]')
+        print(len(df.query('stopID == -5').index), '\tfound no initial position [-5]')
+        print(len(df.query('stopID == -6').index), '\tproduced error during geometry collision detection [-6]')
+        print(len(df.query('stopID == -7').index), '\tproduced error during tracking of crossed material boundaries [-7]')
+        print(len(df.query('stopID == 1').index), '\tabsorbed in bulk material (see solidend) [1]')
+        print(len(df.query('stopID == 2').index), '\tabsorbed on surface (see solidend) [2]')
 
     if not args.save:
         plt.show()
@@ -161,6 +182,10 @@ def toSpherical(x, y, z):
     phi = np.arctan2(y, x)
     theta = np.arccos(np.array(z)/r)
     return r, theta, phi
+
+def func(x, a, b, c):
+    import numpy as np
+    return a * np.exp(-x/b) + c
 
 if ( __name__ == '__main__' ):
     main()

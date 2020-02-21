@@ -15,7 +15,7 @@ def main():
     parser.add_argument('-f', '--file', type=str, required=True, help='Name of hdf file to create/append to')
     parser.add_argument('-t', '--type', type=str, choices=['end', 'spin', 'track', 'hit'], default='end', help='File type to append (default = end)')
     parser.add_argument('-p', '--path', type=str, help = '.out files folder location (default ./)', default='./')
-    parser.add_argument('-mwt', '--maxWaitTime', type=int, default=20, 'Max number of minutes spent waiting for lock file to disappear (default 20 min)')
+    parser.add_argument('-mwt', '--maxWaitTime', type=int, default=5, 'Max number of minutes spent waiting for lock file to disappear (default 5 min)')
     parser.add_argument('-clev', '--compLevel', type=int,  default=9, help = 'Compression level [0-9]. 0 disables compression. Default=9')
     parser.add_argument('-clib', '--compLib', type=str, default='bzip2', help = 'Compression library (default bzip2)' )
     args = parser.parse_args()

@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import argparse
 import os.path
+import h5py
 import sys
 
 def main():
@@ -29,7 +30,7 @@ def main():
     toHdf( runNums, folder, 'neutronend.out', args.compLevel, args.compLib )
 
     print('Reading hit.out files...')
-    toHdf( runNums, folder, 'neutronend.out', args.compLevel, args.compLib )
+    toHdf( runNums, folder, 'neutronhit.out', args.compLevel, args.compLib )
 
     print('Reading spin.out files...')
     toHdf( runNums, folder, 'neutronspin.out', args.compLevel, args.compLib )
@@ -73,15 +74,15 @@ def toHdf( runNums, folder, filetype, clev, clib, hdfKey='neutrons'):
         df.to_hdf(outputFilename, key=hdfKey, format='t', data_columns=True, mode='a', append=True, complib=clib, complevel=clev, dropna=True)
 
     if len(missedRuns) == len(runNums):
-        print('\nNo ' + filetype + ' files read')
+        print('No ' + filetype + ' files read')
     else:
-        print('\nError reading run numbers-- ', missedRuns)
+        print('Error reading run numbers-- ', missedRuns)
         print('Total neutrons in file: ', simTotal)
         print('Saved to ', outputFilename, '\n')
 
-    # Update hdf attribute
-    with h5py.File(outputFilename, "r+") as f:
-        f.attrs['totalParticles'] = simTotal
+        # Update hdf attribute
+        with h5py.File(outputFilename, "r+") as f:
+            f.attrs['totalParticles'] = simTotal
 
     return
 
