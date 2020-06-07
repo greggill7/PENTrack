@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import h5py
 from scipy.optimize import curve_fit
+import uproot
 
 def main():
     parser = argparse.ArgumentParser(description='Plots neutronend.out histograms')
@@ -29,9 +30,7 @@ def main():
 
     print('Reminder: Use --help or -h to see optional arguments')
 
-    if args.hdf == None:
-        df = pd.read_csv(args.file, delim_whitespace=True)
-    else:
+    if args.hdf:
         with h5py.File( args.hdf, "r") as hdfInFile:
             # key=hdfInFile.keys()[0]  # For python2
             key = list( hdfInFile.keys() )[0]
@@ -39,6 +38,11 @@ def main():
             df = pd.read_hdf(args.hdf, key)
         else:
             df = pd.read_hdf(args.hdf, key, where=[args.where])
+    elif args.root:
+        file = uproot.open(args.root)
+        df = file['neutronend'].pandas.df()
+    else:
+        df = pd.read_csv(args.file, delim_whitespace=True)
 
     print('Number of neutrons simulated: ', len(df.index))
     if args.query != None:
@@ -103,7 +107,7 @@ def main():
         df.hist('Eend', bins = args.nbins, grid=False, figsize=(8.5,6))
         plt.ylabel('Number of neutrons')
         plt.xlabel('Kinetic Energy [eV]')
-        
+
         df.hist('Hstart', bins = args.nbins, grid=False, figsize=(8.5,6))
         plt.ylabel('Number of neutrons')
         plt.xlabel('Total Energy [eV]')

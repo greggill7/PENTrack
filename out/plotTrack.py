@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import argparse
 import h5py
+import uproot
 
 def main():
     yNeutron = 1.83247172e8 / 6.28318530718 # s^-1 T^-1. For adiabatic parameter calculation
@@ -31,9 +32,7 @@ def main():
     print('Reminder: Use --help or -h to see optional arguments')
     print('Reading file')
 
-    if args.hdf == None:
-        df = pd.read_csv(args.file, delim_whitespace=True)
-    else:
+    if args.hdf:
         with h5py.File( args.hdf, "r") as hdfInFile:
             # key=hdfInFile.keys()[0]  # For python2
             key = list( hdfInFile.keys() )[0]
@@ -41,6 +40,11 @@ def main():
             df = pd.read_hdf(args.hdf, key)
         else:
             df = pd.read_hdf(args.hdf, key, where=[args.where])
+    elif args.root:
+        file = uproot.open(args.root)
+        df = file['neutronend'].pandas.df()
+    else:
+        df = pd.read_csv(args.file, delim_whitespace=True)
 
     if args.query != None:
         df = df.query(args.query)
