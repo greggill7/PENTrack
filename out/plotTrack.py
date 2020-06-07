@@ -42,7 +42,7 @@ def main():
             df = pd.read_hdf(args.hdf, key, where=[args.where])
     elif args.root:
         file = uproot.open(args.root)
-        df = file['neutronend'].pandas.df()
+        df = file['neutrontrack'].pandas.df()
     else:
         df = pd.read_csv(args.file, delim_whitespace=True)
 
