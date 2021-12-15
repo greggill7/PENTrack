@@ -8,6 +8,10 @@ endif()
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(MPFR_INCLUDE_DIR "/N/soft/rhel7/mpfr/gnu/3.1.5/include") 
+set(MPFR_LIBRARIES "/N/soft/rhel7/mpfr/gnu/3.1.5/lib/libmpfr.so") 
+set(BOOST_ROOT "/N/soft/rhel7/boost/gnu/1.64.0") set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fext-numeric-literals") 
+
 include_directories("alglib-3.15.0/cpp/src")
 add_library(alglib OBJECT alglib-3.15.0/cpp/src/alglibinternal.cpp
                           alglib-3.15.0/cpp/src/integration.cpp
